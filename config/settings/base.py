@@ -1,5 +1,5 @@
 """
-Base settings for MIU Employee Management System.
+Base settings for Maracha District EMS.
 Shared by development, testing, and production settings.
 """
 from pathlib import Path
@@ -169,11 +169,8 @@ EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@maracha.go.ug")
 
 # ---------------------------------------------------------------------------
-# MIU branding configuration
-# NOTE: Colors/logo below are a placeholder theme, not verified official
-# MIU branding. Replace LOGO_STATIC_PATH and the palette once official
-# brand assets are supplied. Kept centralized so substitution is a
-# one-place change (see apps/core/context_processors.py).
+# Maracha District branding configuration
+# Colors/logo are for Maracha District Local Government
 # ---------------------------------------------------------------------------
 DISTRICT_BRANDING = {
     "INSTITUTION_NAME": "Maracha District Local Government",
@@ -181,9 +178,9 @@ DISTRICT_BRANDING = {
     "SYSTEM_NAME": "Employee Management System with Facial Recognition",
     "LOGO_STATIC_PATH": "district/logo.svg",
     "IS_OFFICIAL_LOGO": False,
-    "PRIMARY_COLOR": "hsl(213, 60%, 28%)",   # MIU green
-    "SECONDARY_COLOR": "hsl(213, 55%, 18%)", # dark green
-    "ACCENT_COLOR": "hsl(38, 78%, 48%)",     # MIU gold
+    "PRIMARY_COLOR": "hsl(259, 90%, 50%)",   # Purple
+    "SECONDARY_COLOR": "hsl(259, 90%, 35%)", # Dark purple
+    "ACCENT_COLOR": "hsl(38, 70%, 50%)",     # Gold
 }
 
 # ---------------------------------------------------------------------------
@@ -215,6 +212,6 @@ LOGGING = {
     "root": {"handlers": ["console"], "level": "INFO"},
     "loggers": {
         "django.security": {"handlers": ["console"], "level": "WARNING", "propagate": False},
-        "miu_ems": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "maracha_ems": {"handlers": ["console"], "level": "INFO", "propagate": False},
     },
 }
