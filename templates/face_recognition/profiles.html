@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Face Profiles{% endblock %}
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;padding:24px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 style="font-size:20px;font-weight:700;margin:0">Face Profiles</h1>
+      <p style="font-size:13px;color:#8b949e;margin:4px 0 0">{{ registered_count }} of {{ total_count }} active employees registered</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="{% url 'face:kiosk' %}" class="btn btn-primary" target="_blank">🖥 Open Kiosk</a>
+      <a href="{% url 'face:logs' %}"  class="btn btn-ghost">📋 Scan Logs</a>
+    </div>
+  </div>
+
+  {% if request.GET.registered %}
+  <div style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#4ade80;font-size:13px">
+    ✅ Face profile saved successfully.
+  </div>
+  {% endif %}
+
+  <!-- Progress bar -->
+  <div style="background:rgba(255,255,255,.05);border-radius:4px;height:6px;margin-bottom:24px;overflow:hidden">
+    <div style="height:100%;background:#4ade80;border-radius:4px;width:{% widthratio registered_count total_count 100 %}%;transition:width .5s"></div>
+  </div>
+
+  <div style="background:#161b22;border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden">
+    <div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px">
+      <input type="search" id="searchInput" placeholder="Search employee…" oninput="filterTable()"
+             style="background:#0d1117;border:1px solid rgba(255,255,255,.1);color:#e6edf3;padding:7px 12px;border-radius:6px;font-size:13px;width:220px">
+      <select id="filterStatus" onchange="filterTable()"
+              style="background:#0d1117;border:1px solid rgba(255,255,255,.1);color:#e6edf3;padding:7px 10px;border-radius:6px;font-size:13px">
+        <option value="">All employees</option>
+        <option value="registered">Registered</option>
+        <option value="unregistered">Not registered</option>
+      </select>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse" id="profileTable">
+        <thead>
+          <tr style="background:rgba(0,0,0,.2)">
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase;letter-spacing:.7px;white-space:nowrap">Employee</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase;letter-spacing:.7px">Department</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase;letter-spacing:.7px">Face Status</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase;letter-spacing:.7px">Registered</th>
+            <th style="padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase;letter-spacing:.7px">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for emp in employees %}
+          {% with profile=emp.face_profile %}
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)" data-name="{{ emp.full_name|lower }}" data-id="{{ emp.employee_id|lower }}" data-status="{% if profile and profile.is_active %}registered{% else %}unregistered{% endif %}">
+            <td style="padding:12px 16px">
+              <div style="font-weight:600">{{ emp.full_name }}</div>
+              <div style="font-size:11px;color:#8b949e;font-family:monospace">{{ emp.employee_id }}</div>
+            </td>
+            <td style="padding:12px 16px;font-size:13px;color:#8b949e">{{ emp.department|default:"—" }}</td>
+            <td style="padding:12px 16px">
+              {% if profile and profile.is_active %}
+                <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.25)">
+                  ✓ Registered ({{ profile.sample_count }} sample{{ profile.sample_count|pluralize }})
+                </span>
+              {% else %}
+                <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,.04);color:#8b949e;border:1px solid rgba(255,255,255,.08)">
+                  ✗ Not registered
+                </span>
+              {% endif %}
+            </td>
+            <td style="padding:12px 16px;font-size:12px;color:#8b949e;font-family:monospace">
+              {% if profile and profile.is_active %}{{ profile.created_at|date:"d M Y" }}{% else %}—{% endif %}
+            </td>
+            <td style="padding:12px 16px;text-align:right">
+              <div style="display:flex;gap:6px;justify-content:flex-end">
+                <a href="{% url 'face:register' emp.pk %}" class="btn btn-ghost btn-sm">
+                  {% if profile and profile.is_active %}✏️ Re-register{% else %}📷 Register{% endif %}
+                </a>
+                {% if profile and profile.is_active %}
+                <form method="post" action="{% url 'face:delete' emp.pk %}" style="display:inline" onsubmit="return confirm('Deactivate face profile for {{ emp.full_name }}?')">
+                  {% csrf_token %}<button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endwith %}
+          {% empty %}
+          <tr><td colspan="5" style="padding:40px;text-align:center;color:#8b949e">No active employees found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+function filterTable() {
+  const q  = document.getElementById('searchInput').value.toLowerCase();
+  const st = document.getElementById('filterStatus').value;
+  document.querySelectorAll('#profileTable tbody tr').forEach(row => {
+    const name   = row.dataset.name  || '';
+    const id     = row.dataset.id    || '';
+    const status = row.dataset.status|| '';
+    const matchQ = !q  || name.includes(q) || id.includes(q);
+    const matchS = !st || status === st;
+    row.style.display = matchQ && matchS ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

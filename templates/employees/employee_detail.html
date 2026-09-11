@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ employee.full_name }}{% endblock %}
+{% block content %}
+<h2>{{ employee.full_name }} <small style="color:var(--miu-muted);">({{ employee.employee_id }})</small></h2>
+<div class="card">
+  <p><strong>Email:</strong> {{ employee.email }}</p>
+  <p><strong>Phone:</strong> {{ employee.phone|default:"—" }}</p>
+  <p><strong>Department:</strong> {{ employee.department|default:"—" }}</p>
+  <p><strong>Position:</strong> {{ employee.position|default:"—" }}</p>
+  <p><strong>Employment Type:</strong> {{ employee.get_employment_type_display }}</p>
+  <p><strong>Status:</strong> {{ employee.get_employment_status_display }}</p>
+  <p><strong>Date Joined:</strong> {{ employee.date_joined_org }}</p>
+  <p><strong>Supervisor:</strong> {{ employee.supervisor|default:"—" }}</p>
+</div>
+{% if can_edit %}
+<a class="btn btn-primary" href="{% url 'employees:edit' employee.pk %}">Edit</a>
+<a class="btn btn-danger" href="{% url 'employees:deactivate' employee.pk %}">Deactivate</a>
+{% endif %}
+{% endblock %}

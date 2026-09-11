@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Supervisor Assessment — {{ evaluation.employee }} ({{ evaluation.cycle }})</h2>
+<div class="card" style="max-width:600px;">
+  <form method="post">
+    {% csrf_token %}
+    <h4>Scores</h4>
+    {% for c in criteria %}
+      <label>{{ c.name }} (weight {{ c.weight }})</label>
+      <input class="form-control" type="number" min="1" max="5" name="score_{{ c.id }}" required>
+    {% endfor %}
+    <h4>Comment</h4>
+    {{ comment_form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit Assessment</button>
+  </form>
+</div>
+{% endblock %}

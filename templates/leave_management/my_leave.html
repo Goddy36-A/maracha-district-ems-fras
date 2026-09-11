@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}My Leave{% endblock %}
+{% block content %}
+<h2>My Leave</h2>
+
+<h3>Leave Balances</h3>
+<table class="miu-table">
+  <thead><tr><th>Leave Type</th><th>Entitlement</th><th>Used</th><th>Pending</th><th>Remaining</th></tr></thead>
+  <tbody>
+    {% for b in balances %}
+    <tr><td>{{ b.leave_type }}</td><td>{{ b.annual_entitlement }}</td><td>{{ b.used }}</td><td>{{ b.pending }}</td><td>{{ b.remaining }}</td></tr>
+    {% empty %}<tr><td colspan="5">No leave balances recorded yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Submit a Leave Request</h3>
+<div class="card" style="max-width:480px;">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit Request</button>
+  </form>
+</div>
+
+<h3>My Requests</h3>
+<table class="miu-table">
+  <thead><tr><th>Type</th><th>Dates</th><th>Days</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+    {% for r in requests %}
+    <tr>
+      <td>{{ r.leave_type }}</td>
+      <td>{{ r.start_date }} – {{ r.end_date }}</td>
+      <td>{{ r.number_of_days }}</td>
+      <td><span class="badge badge-warning">{{ r.get_status_display }}</span></td>
+      <td>{% if r.status == "PENDING" %}<a href="{% url 'leave:cancel' r.pk %}">Cancel</a>{% endif %}</td>
+    </tr>
+    {% empty %}<tr><td colspan="5">No leave requests yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

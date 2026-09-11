@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:1.25rem;">
+  <h2 style="margin:0;color:var(--miu-primary);">
+    Welcome, {{ employee.full_name|default:user.username }}
+  </h2>
+  {% if employee %}
+  <p style="margin:0.25rem 0 0;color:var(--miu-muted);font-size:0.9rem;">
+    {{ employee.employee_id }}
+    {% if employee.position %} &middot; {{ employee.position }}{% endif %}
+    {% if employee.department %} &middot; {{ employee.department }}{% endif %}
+  </p>
+  {% endif %}
+</div>
+
+{% if employee %}
+
+<div class="metric-cards" style="margin-bottom:1.5rem;">
+  <div class="metric-card">
+    <div class="value" style="font-size:1.2rem;
+      color:{% if todays_attendance.status == 'PRESENT' %}var(--miu-primary)
+            {% elif todays_attendance.status == 'LATE' %}var(--miu-accent)
+            {% elif todays_attendance %}var(--miu-danger)
+            {% else %}var(--miu-muted){% endif %};">
+      {{ todays_attendance.get_status_display|default:"Not recorded" }}
+    </div>
+    <div class="label">Today's Attendance</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:var(--miu-accent);">{{ pending_leave_count }}</div>
+    <div class="label">Pending Leave Requests</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:var(--miu-primary);">
+      {% if attendance_summary.attendance_rate %}{{ attendance_summary.attendance_rate }}%{% else %}—{% endif %}
+    </div>
+    <div class="label">Attendance Rate (This Month)</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="font-size:1rem;color:var(--miu-primary);">
+      {{ latest_evaluation.get_stage_display|default:"—" }}
+    </div>
+    <div class="label">Performance Review Status</div>
+  </div>
+</div>
+
+{% if latest_notification %}
+<div class="card" style="border-left:4px solid var(--miu-accent);margin-bottom:1rem;">
+  <strong style="color:var(--miu-accent);">🔔 Notification:</strong>
+  {{ latest_notification.message }}
+</div>
+{% endif %}
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+  <div class="card">
+    <h3 style="margin-top:0;color:var(--miu-primary);font-size:1rem;">Leave Balances</h3>
+    <table class="miu-table">
+      <thead><tr><th>Leave Type</th><th style="text-align:right;">Remaining Days</th></tr></thead>
+      <tbody>
+        {% for b in leave_balances %}
+        <tr>
+          <td>{{ b.leave_type }}</td>
+          <td style="text-align:right;">
+            <span class="badge {% if b.remaining > 5 %}badge-success{% elif b.remaining > 0 %}badge-warning{% else %}badge-danger{% endif %}">
+              {{ b.remaining }}
+            </span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="2" style="color:var(--miu-muted);font-size:0.9rem;">
+          No leave balances recorded. Contact HR.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;color:var(--miu-primary);font-size:1rem;">Quick Links</h3>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      <a href="{% url 'leave:mine' %}"       class="btn btn-outline" style="text-align:center;">My Leave Requests</a>
+      <a href="{% url 'attendance:mine' %}"  class="btn btn-outline" style="text-align:center;">My Attendance</a>
+      <a href="{% url 'performance:mine' %}" class="btn btn-outline" style="text-align:center;">My Performance</a>
+      <a href="{% url 'documents:mine' %}"   class="btn btn-outline" style="text-align:center;">My Documents</a>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<div class="card" style="text-align:center;padding:2rem;color:var(--miu-muted);">
+  <p style="font-size:1.1rem;">No employee profile linked to your account yet.</p>
+  <p>Please contact HR to complete your setup.</p>
+</div>
+{% endif %}
+
+{% endblock %}

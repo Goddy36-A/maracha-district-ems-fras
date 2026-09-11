@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}HR Leave Review{% endblock %}
+{% block content %}
+<h2>HR Review Queue</h2>
+<table class="miu-table">
+  <thead><tr><th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th></th></tr></thead>
+  <tbody>
+    {% for r in page_obj %}
+    <tr>
+      <td>{{ r.employee }}</td><td>{{ r.leave_type }}</td>
+      <td>{{ r.start_date }} – {{ r.end_date }}</td><td>{{ r.number_of_days }}</td>
+      <td>
+        <form method="post" action="{% url 'leave:hr_review_action' r.pk 'approve' %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn btn-primary">Approve</button></form>
+        <form method="post" action="{% url 'leave:hr_review_action' r.pk 'reject' %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn btn-danger">Reject</button></form>
+      </td>
+    </tr>
+    {% empty %}<tr><td colspan="5">No requests awaiting HR review.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

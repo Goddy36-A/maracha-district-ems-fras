@@ -1,0 +1,211 @@
+/*
+  MIU-EMS Brand Theme — Real Metropolitan International University Colors
+  Primary green: hsl(213, 60%, 28%)
+  Gold accent:   hsl(38, 70%, 50%)
+*/
+:root {
+  --primary:       hsl(213, 60%, 28%);   /* MIU green */
+  --primary-dark:  hsl(213, 55%, 18%);   /* deeper green */
+  --secondary:     hsl(213, 55%, 18%);   /* sidebar / dark green */
+  --accent:        hsl(38,  70%, 50%);   /* MIU gold */
+  --accent-light:  hsl(45,  80%, 55%);   /* lighter gold */
+  --hero-gradient: linear-gradient(135deg, hsl(213, 60%, 28%), hsl(213, 55%, 18%));
+  --gold-gradient: linear-gradient(135deg, hsl(38,  70%, 50%), hsl(45,  80%, 55%));
+  --bg:      #F5F7F5;
+  --surface: #FFFFFF;
+  --text:    #1A2B1A;
+  --muted:   #5A6B5A;
+  --border:  #D8E4D8;
+  --success: hsl(213, 60%, 28%);
+  --warning: hsl(38,  70%, 50%);
+  --danger:  #B3261E;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.header {
+  background: var(--hero-gradient);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.header img { height: 40px; width: 40px; }
+.header .titles { line-height: 1.2; }
+.header .titles .institution { font-weight: 700; font-size: 1.05rem; }
+.header .titles .system-name { font-size: 0.85rem; opacity: 0.9; }
+.header .spacer { flex: 1; }
+.header .user-menu { font-size: 0.9rem; display: flex; align-items: center; gap: 0.75rem; }
+.header .user-menu a { color: #fff; }
+
+/* Gold accent bar under header */
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 3px;
+  background: var(--gold-gradient);
+  top: 100%;
+}
+.header { position: relative; }
+
+.layout { display: flex; min-height: calc(100vh - 64px); }
+
+.sidebar {
+  width: 240px;
+  background: var(--secondary);
+  color: #fff;
+  padding: 1rem 0;
+  flex-shrink: 0;
+}
+.sidebar a {
+  display: block;
+  padding: 0.6rem 1.25rem;
+  color: #D4ECD4;
+  font-size: 0.92rem;
+}
+.sidebar a:hover, .sidebar a.active {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  text-decoration: none;
+  border-left: 3px solid var(--accent);
+}
+
+.main { flex: 1; padding: 1.5rem; }
+
+.footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.metric-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.metric-card { background: var(--surface); border-left: 4px solid var(--primary); border-radius: 6px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.metric-card .value { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+.metric-card .label { font-size: 0.85rem; color: var(--muted); }
+
+.form-control, .form-select {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+.form-control:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px hsla(145, 65%, 28%, 0.15);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-accent { background: var(--gold-gradient); color: #fff; }
+.btn-secondary { background: var(--secondary); color: #fff; }
+.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+.btn-danger { background: var(--danger); color: #fff; }
+
+table.table { width: 100%; border-collapse: collapse; background: var(--surface); }
+table.table th, table.table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.9rem; }
+table.table th { background: var(--bg); font-weight: 600; color: var(--primary); }
+
+.badge { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.badge-success { background: hsla(145, 65%, 28%, 0.12); color: var(--primary); }
+.badge-warning { background: hsla(38, 70%, 50%, 0.15); color: hsl(38, 70%, 35%); }
+.badge-danger { background: #FBE6E4; color: var(--danger); }
+.badge-muted { background: #EEEEEE; color: var(--muted); }
+
+.messages { list-style: none; padding: 0; margin: 0 0 1rem; }
+.messages li { padding: 0.6rem 0.9rem; border-radius: 6px; margin-bottom: 0.5rem; font-size: 0.9rem; }
+.messages li.success { background: hsla(145, 65%, 28%, 0.10); color: var(--primary); }
+.messages li.error { background: #FBE6E4; color: var(--danger); }
+.messages li.info { background: hsla(145, 65%, 28%, 0.07); color: var(--secondary); }
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hero-gradient);
+}
+.login-card {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  border-top: 4px solid var(--accent);
+}
+.login-card img { height: 64px; margin-bottom: 0.75rem; }
+.login-card h1 { font-size: 1.15rem; margin: 0.25rem 0; color: var(--primary); }
+.login-card .system-name { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.9rem; }
+.login-card .btn-primary { width: 100%; margin-top: 0.5rem; }
+
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 0.25rem 0; }
+  .sidebar a { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; }
+  .sidebar a.active { border-left: none; border-bottom: 3px solid var(--accent); }
+}
+
+/* Logout button — matches header link style */
+.logout-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  text-decoration: none;
+  font-family: inherit;
+}
+.logout-btn:hover { text-decoration: underline; }
+
+/* Logo sizing in header */
+.logo { height: 52px; width: 52px; }
+
+/* Maracha DLG additions */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px;
+       border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;
+       border:1px solid transparent; text-decoration:none; transition:all .15s; }
+.btn-primary { background:hsl(213,60%,28%); color:#fff; border-color:hsl(213,60%,28%); }
+.btn-primary:hover { background:hsl(213,60%,35%); }
+.btn-ghost   { background:transparent; color:#4b5563; border-color:#d1d5db; }
+.btn-ghost:hover { background:#f3f4f6; }
+.btn-danger  { background:#fee2e2; color:#dc2626; border-color:#fca5a5; }
+.btn-danger:hover { background:#fecaca; }
+.btn-success { background:#dcfce7; color:#16a34a; border-color:#86efac; }
+.btn-sm      { padding:4px 10px; font-size:12px; }

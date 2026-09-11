@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h2>HR & Workforce Reports</h2>
+<ul>
+  <li><a href="{% url 'reports:employees_by_department' %}">Employees by Department</a></li>
+  <li><a href="{% url 'reports:employees_by_status' %}">Employees by Status</a></li>
+  <li><a href="{% url 'reports:leave_utilization' %}">Leave Utilization</a></li>
+  <li><a href="{% url 'reports:performance_completion' %}">Performance Review Completion</a></li>
+  <li><a href="{% url 'reports:employees_csv' %}">Export Employee List (CSV)</a></li>
+</ul>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Employees{% endblock %}
+{% block content %}
+<h2>Employees</h2>
+<form method="get" style="max-width:320px;">
+  {{ form.q }}
+  <button type="submit" class="btn btn-outline">Search</button>
+</form>
+{% if can_edit %}<p><a class="btn btn-primary" href="{% url 'employees:create' %}">+ New Employee</a></p>{% endif %}
+<table class="miu-table">
+  <thead><tr><th>Employee ID</th><th>Name</th><th>Department</th><th>Position</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+    {% for emp in page_obj %}
+    <tr>
+      <td>{{ emp.employee_id }}</td>
+      <td>{{ emp.full_name }}</td>
+      <td>{{ emp.department|default:"—" }}</td>
+      <td>{{ emp.position|default:"—" }}</td>
+      <td><span class="badge badge-success">{{ emp.get_employment_status_display }}</span></td>
+      <td><a href="{% url 'employees:detail' emp.pk %}">View</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No employees found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p>
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">&laquo; Prev</a>{% endif %}
+  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>{% endif %}
+</p>
+{% endblock %}

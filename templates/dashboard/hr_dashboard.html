@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}HR Dashboard{% endblock %}
+{% block content %}
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+  <div>
+    <h2 style="margin:0;color:var(--miu-primary);">HR Dashboard</h2>
+    <p style="margin:0.25rem 0 0;color:var(--miu-muted);font-size:0.9rem;">
+      Welcome back — here is today's workforce snapshot.
+    </p>
+  </div>
+  <a href="{% url 'employees:create' %}" class="btn btn-primary">+ Add Employee</a>
+</div>
+
+<div class="metric-cards" style="margin-bottom:1.5rem;">
+  <div class="metric-card">
+    <div class="value" style="color:var(--miu-primary);">{{ total_employees }}</div>
+    <div class="label">Total Employees</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:var(--miu-primary);">{{ active_employees }}</div>
+    <div class="label">Active</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:var(--miu-accent);">{{ on_leave }}</div>
+    <div class="label">On Leave</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:var(--miu-primary);">{{ department_count }}</div>
+    <div class="label">Departments</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:{% if pending_leave > 0 %}var(--miu-danger){% else %}var(--miu-primary){% endif %};">
+      {{ pending_leave }}
+    </div>
+    <div class="label">Pending Leave Requests</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:var(--miu-primary);">{{ present_today }}</div>
+    <div class="label">Present Today</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:var(--miu-accent);">
+      {% if review_completion %}{{ review_completion }}%{% else %}—{% endif %}
+    </div>
+    <div class="label">Performance Review Completion</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+  <div class="card">
+    <h3 style="margin-top:0;color:var(--miu-primary);font-size:1rem;">Quick Actions</h3>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      <a href="{% url 'employees:list' %}"      class="btn btn-outline" style="text-align:center;">View All Employees</a>
+      <a href="{% url 'attendance:create' %}"      class="btn btn-outline" style="text-align:center;">Record Attendance</a>
+      <a href="{% url 'leave:hr_review_queue' %}" class="btn btn-outline" style="text-align:center;">Review Leave Requests</a>
+      <a href="{% url 'reports:hub' %}"         class="btn btn-outline" style="text-align:center;">Generate Reports</a>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0;color:var(--miu-primary);font-size:1rem;">System Status</h3>
+    <table style="width:100%;font-size:0.9rem;">
+      <tr><td style="padding:0.35rem 0;color:var(--miu-muted);">Leave Backlog</td>
+          <td style="text-align:right;">
+            <span class="badge {% if pending_leave > 0 %}badge-warning{% else %}badge-success{% endif %}">
+              {{ pending_leave }} pending
+            </span>
+          </td></tr>
+      <tr><td style="padding:0.35rem 0;color:var(--miu-muted);">Attendance (Today)</td>
+          <td style="text-align:right;">
+            <span class="badge badge-success">{{ present_today }} present</span>
+          </td></tr>
+      <tr><td style="padding:0.35rem 0;color:var(--miu-muted);">On Leave</td>
+          <td style="text-align:right;">
+            <span class="badge badge-muted">{{ on_leave }}</span>
+          </td></tr>
+      <tr><td style="padding:0.35rem 0;color:var(--miu-muted);">Perf. Reviews Done</td>
+          <td style="text-align:right;">
+            <span class="badge badge-success">
+              {% if review_completion %}{{ review_completion }}%{% else %}No cycles yet{% endif %}
+            </span>
+          </td></tr>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

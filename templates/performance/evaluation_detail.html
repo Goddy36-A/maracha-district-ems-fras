@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ evaluation.cycle }}{% endblock %}
+{% block content %}
+<h2>{{ evaluation.employee }} — {{ evaluation.cycle }}</h2>
+<p><strong>Stage:</strong> {{ evaluation.get_stage_display }}</p>
+{% if evaluation.final_score %}<p><strong>Final Score:</strong> {{ evaluation.final_score }}</p>{% endif %}
+
+{% if scores %}
+<table class="miu-table">
+  <thead><tr><th>Criterion</th><th>Score</th><th>Comment</th></tr></thead>
+  <tbody>
+    {% for s in scores %}<tr><td>{{ s.criterion.name }}</td><td>{{ s.score }}</td><td>{{ s.comment }}</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if evaluation.self_assessment_comment %}<div class="card"><strong>Self-Assessment:</strong><p>{{ evaluation.self_assessment_comment }}</p></div>{% endif %}
+{% if evaluation.supervisor_comment %}<div class="card"><strong>Supervisor Comment:</strong><p>{{ evaluation.supervisor_comment }}</p></div>{% endif %}
+
+{% if can_self_assess %}<a class="btn btn-primary" href="{% url 'performance:self_assessment' evaluation.pk %}">Complete Self-Assessment</a>{% endif %}
+{% if can_supervisor_assess %}<a class="btn btn-primary" href="{% url 'performance:supervisor_assessment' evaluation.pk %}">Complete Supervisor Assessment</a>{% endif %}
+{% if can_finalize %}
+<form method="post" action="{% url 'performance:finalize' evaluation.pk %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn btn-secondary">Finalize Evaluation</button></form>
+{% endif %}
+{% if can_acknowledge %}
+<form method="post" action="{% url 'performance:acknowledge' evaluation.pk %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn btn-outline">Acknowledge</button></form>
+{% endif %}
+{% endblock %}

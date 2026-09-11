@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ branding.SYSTEM_NAME }}{% endblock %} — {{ branding.INSTITUTION_SHORT_NAME }}</title>
+    <link rel="icon" type="image/svg+xml" href="{% static branding.LOGO_STATIC_PATH %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<header class="app-header">
+    <img src="{% static branding.LOGO_STATIC_PATH %}" alt="{{ branding.INSTITUTION_SHORT_NAME }} logo" class="app-logo">
+    <div class="titles">
+        <div class="institution">{{ branding.INSTITUTION_NAME }}</div>
+        <div class="system-name">{{ branding.SYSTEM_NAME }}</div>
+    </div>
+    <div class="spacer"></div>
+    {% if user.is_authenticated %}
+    <div class="user-menu">
+        <span>{{ user.get_full_name|default:user.username }} &middot; {{ user.get_role_display }}</span>
+        <a href="{% url 'accounts:password_change' %}">Change Password</a>
+        <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+    {% endif %}
+</header>
+
+<div class="app-layout">
+    {% if user.is_authenticated %}
+    <nav class="app-sidebar">
+        <a href="{% url 'dashboard:home' %}">Dashboard</a>
+        {% if user.is_superuser or user.role == 'ADMIN' or user.role == 'HR' %}
+            <a href="{% url 'employees:list' %}">Employees</a>
+            <a href="{% url 'attendance:list' %}">Attendance</a>
+            <a href="{% url 'leave:hr_review_queue' %}">Leave (HR Review)</a>
+            <a href="{% url 'documents:upload' %}">Documents</a>
+            <a href="{% url 'reports:hub' %}">Reports</a>
+            <a href="{% url 'dashboard:effectiveness' %}">System Effectiveness</a>
+        {% endif %}
+        {% if user.is_superuser or user.role == 'ADMIN' or user.role == 'HR' %}
+            <a href="{% url 'face:profiles' %}">Face Profiles</a>
+            <a href="{% url 'face:logs' %}">Scan Logs</a>
+        {% endif %}
+        <a href="{% url 'face:kiosk' %}" target="_blank" style="color:#4ade80">🖥 Face Kiosk</a>
+        {% if user.role == 'DEPARTMENT_HEAD' %}
+            <a href="{% url 'employees:list' %}">My Department</a>
+            <a href="{% url 'leave:department_approvals' %}">Leave Approvals</a>
+        {% endif %}
+        {% if user.role == 'EMPLOYEE' %}
+            <a href="{% url 'attendance:mine' %}">My Attendance</a>
+            <a href="{% url 'leave:mine' %}">My Leave</a>
+            <a href="{% url 'performance:mine' %}">My Performance</a>
+            <a href="{% url 'documents:mine' %}">My Documents</a>
+        {% endif %}
+        {% if user.role == 'MANAGEMENT' %}
+            <a href="{% url 'reports:hub' %}">Workforce Analytics</a>
+        {% endif %}
+        <a href="{% url 'dashboard:survey' %}">Feedback Survey</a>
+        {% if user.is_superuser %}<a href="{% url 'admin:index' %}">Admin Panel</a>{% endif %}
+    </nav>
+    {% endif %}
+
+    <main class="app-main">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<footer class="app-footer">
+    &copy; {% now "Y" %} {{ branding.INSTITUTION_NAME }} — {{ branding.SYSTEM_NAME }}
+</footer>
+
+</body>
+</html>

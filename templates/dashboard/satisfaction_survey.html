@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Feedback Survey{% endblock %}
+{% block content %}
+<h2>System Feedback Survey</h2>
+<p><small>These are sample evaluation questions for this project and are not an official MIU survey instrument.</small></p>
+<div class="card" style="max-width:600px;">
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div style="margin-bottom:1rem;">
+        <label>{{ field.label }}</label><br>
+        {{ field }}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+  </form>
+</div>
+{% endblock %}

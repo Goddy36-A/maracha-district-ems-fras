@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Performance Review Completion</h2>
+<div class="metric-cards">
+  <div class="metric-card"><div class="value">{{ total }}</div><div class="label">Total Evaluations</div></div>
+  <div class="metric-card"><div class="value">{{ completed }}</div><div class="label">Completed</div></div>
+  <div class="metric-card"><div class="value">{{ rate|default:"—" }}{% if rate %}%{% endif %}</div><div class="label">Completion Rate</div></div>
+  <div class="metric-card"><div class="value">{{ avg_score|default:"—" }}</div><div class="label">Average Score</div></div>
+</div>
+{% endblock %}

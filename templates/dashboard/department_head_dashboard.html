@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Department Dashboard{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:1.25rem;">
+  <h2 style="margin:0;color:var(--miu-primary);">
+    {% if department %}{{ department.name }}{% else %}My Department{% endif %}
+  </h2>
+  <p style="margin:0.25rem 0 0;color:var(--miu-muted);font-size:0.9rem;">
+    Department Head Overview
+  </p>
+</div>
+
+{% if department %}
+<div class="metric-cards" style="margin-bottom:1.5rem;">
+  <div class="metric-card">
+    <div class="value" style="color:var(--miu-primary);">{{ team_size }}</div>
+    <div class="label">Team Members</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:{% if pending_leave > 0 %}var(--miu-danger){% else %}var(--miu-primary){% endif %};">
+      {{ pending_leave }}
+    </div>
+    <div class="label">Pending Leave Approvals</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+  <div class="card">
+    <h3 style="margin-top:0;color:var(--miu-primary);font-size:1rem;">Quick Actions</h3>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      <a href="{% url 'employees:list' %}"         class="btn btn-outline" style="text-align:center;">View Department Staff</a>
+      <a href="{% url 'leave:department_approvals' %}" class="btn btn-outline" style="text-align:center;">
+        Review Leave Requests
+        {% if pending_leave > 0 %}
+          <span class="badge badge-danger" style="margin-left:0.4rem;">{{ pending_leave }}</span>
+        {% endif %}
+      </a>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0;color:var(--miu-primary);font-size:1rem;">Department Info</h3>
+    <table style="width:100%;font-size:0.9rem;">
+      <tr><td style="color:var(--miu-muted);padding:0.3rem 0;">Department Code</td>
+          <td style="text-align:right;font-weight:600;">{{ department.code }}</td></tr>
+      <tr><td style="color:var(--miu-muted);padding:0.3rem 0;">Total Staff</td>
+          <td style="text-align:right;"><span class="badge badge-success">{{ team_size }}</span></td></tr>
+      <tr><td style="color:var(--miu-muted);padding:0.3rem 0;">Pending Leave</td>
+          <td style="text-align:right;">
+            <span class="badge {% if pending_leave > 0 %}badge-warning{% else %}badge-success{% endif %}">
+              {{ pending_leave }}
+            </span>
+          </td></tr>
+    </table>
+  </div>
+</div>
+
+{% else %}
+<div class="card" style="text-align:center;padding:2rem;color:var(--miu-muted);">
+  <p>No department assigned to your profile yet.</p>
+  <p>Contact HR or the System Administrator to complete your setup.</p>
+</div>
+{% endif %}
+
+{% endblock %}

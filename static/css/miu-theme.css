@@ -1,0 +1,198 @@
+/*
+  MIU-EMS Brand Theme — Real Metropolitan International University Colors
+  Primary green: hsl(145, 65%, 28%)
+  Gold accent:   hsl(38, 70%, 50%)
+*/
+:root {
+  --miu-primary:       hsl(145, 65%, 28%);   /* MIU green */
+  --miu-primary-dark:  hsl(150, 50%, 20%);   /* deeper green */
+  --miu-secondary:     hsl(150, 50%, 20%);   /* sidebar / dark green */
+  --miu-accent:        hsl(38,  70%, 50%);   /* MIU gold */
+  --miu-accent-light:  hsl(45,  80%, 55%);   /* lighter gold */
+  --miu-hero-gradient: linear-gradient(135deg, hsl(145, 65%, 28%), hsl(150, 50%, 20%));
+  --miu-gold-gradient: linear-gradient(135deg, hsl(38,  70%, 50%), hsl(45,  80%, 55%));
+  --miu-bg:      #F5F7F5;
+  --miu-surface: #FFFFFF;
+  --miu-text:    #1A2B1A;
+  --miu-muted:   #5A6B5A;
+  --miu-border:  #D8E4D8;
+  --miu-success: hsl(145, 65%, 28%);
+  --miu-warning: hsl(38,  70%, 50%);
+  --miu-danger:  #B3261E;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--miu-bg);
+  color: var(--miu-text);
+}
+
+a { color: var(--miu-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.miu-header {
+  background: var(--miu-hero-gradient);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.miu-header img { height: 40px; width: 40px; }
+.miu-header .titles { line-height: 1.2; }
+.miu-header .titles .institution { font-weight: 700; font-size: 1.05rem; }
+.miu-header .titles .system-name { font-size: 0.85rem; opacity: 0.9; }
+.miu-header .spacer { flex: 1; }
+.miu-header .user-menu { font-size: 0.9rem; display: flex; align-items: center; gap: 0.75rem; }
+.miu-header .user-menu a { color: #fff; }
+
+/* Gold accent bar under header */
+.miu-header::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 3px;
+  background: var(--miu-gold-gradient);
+  top: 100%;
+}
+.miu-header { position: relative; }
+
+.miu-layout { display: flex; min-height: calc(100vh - 64px); }
+
+.miu-sidebar {
+  width: 240px;
+  background: var(--miu-secondary);
+  color: #fff;
+  padding: 1rem 0;
+  flex-shrink: 0;
+}
+.miu-sidebar a {
+  display: block;
+  padding: 0.6rem 1.25rem;
+  color: #D4ECD4;
+  font-size: 0.92rem;
+}
+.miu-sidebar a:hover, .miu-sidebar a.active {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  text-decoration: none;
+  border-left: 3px solid var(--miu-accent);
+}
+
+.miu-main { flex: 1; padding: 1.5rem; }
+
+.miu-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: var(--miu-muted);
+  border-top: 1px solid var(--miu-border);
+}
+
+.card {
+  background: var(--miu-surface);
+  border: 1px solid var(--miu-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.metric-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.metric-card { background: var(--miu-surface); border-left: 4px solid var(--miu-primary); border-radius: 6px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.metric-card .value { font-size: 1.8rem; font-weight: 700; color: var(--miu-primary); }
+.metric-card .label { font-size: 0.85rem; color: var(--miu-muted); }
+
+.form-control, .form-select {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--miu-border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+.form-control:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--miu-primary);
+  box-shadow: 0 0 0 3px hsla(145, 65%, 28%, 0.15);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.btn-primary { background: var(--miu-primary); color: #fff; }
+.btn-primary:hover { background: var(--miu-primary-dark); }
+.btn-accent { background: var(--miu-gold-gradient); color: #fff; }
+.btn-secondary { background: var(--miu-secondary); color: #fff; }
+.btn-outline { background: transparent; border: 1px solid var(--miu-primary); color: var(--miu-primary); }
+.btn-danger { background: var(--miu-danger); color: #fff; }
+
+table.miu-table { width: 100%; border-collapse: collapse; background: var(--miu-surface); }
+table.miu-table th, table.miu-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--miu-border); text-align: left; font-size: 0.9rem; }
+table.miu-table th { background: var(--miu-bg); font-weight: 600; color: var(--miu-primary); }
+
+.badge { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.badge-success { background: hsla(145, 65%, 28%, 0.12); color: var(--miu-primary); }
+.badge-warning { background: hsla(38, 70%, 50%, 0.15); color: hsl(38, 70%, 35%); }
+.badge-danger { background: #FBE6E4; color: var(--miu-danger); }
+.badge-muted { background: #EEEEEE; color: var(--miu-muted); }
+
+.messages { list-style: none; padding: 0; margin: 0 0 1rem; }
+.messages li { padding: 0.6rem 0.9rem; border-radius: 6px; margin-bottom: 0.5rem; font-size: 0.9rem; }
+.messages li.success { background: hsla(145, 65%, 28%, 0.10); color: var(--miu-primary); }
+.messages li.error { background: #FBE6E4; color: var(--miu-danger); }
+.messages li.info { background: hsla(145, 65%, 28%, 0.07); color: var(--miu-secondary); }
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--miu-hero-gradient);
+}
+.login-card {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  border-top: 4px solid var(--miu-accent);
+}
+.login-card img { height: 64px; margin-bottom: 0.75rem; }
+.login-card h1 { font-size: 1.15rem; margin: 0.25rem 0; color: var(--miu-primary); }
+.login-card .system-name { color: var(--miu-muted); margin-bottom: 1.5rem; font-size: 0.9rem; }
+.login-card .btn-primary { width: 100%; margin-top: 0.5rem; }
+
+@media (max-width: 768px) {
+  .miu-layout { flex-direction: column; }
+  .miu-sidebar { width: 100%; display: flex; overflow-x: auto; padding: 0.25rem 0; }
+  .miu-sidebar a { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; }
+  .miu-sidebar a.active { border-left: none; border-bottom: 3px solid var(--miu-accent); }
+}
+
+/* Logout button — matches header link style */
+.logout-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  text-decoration: none;
+  font-family: inherit;
+}
+.logout-btn:hover { text-decoration: underline; }
+
+/* Logo sizing in header */
+.miu-logo { height: 52px; width: 52px; }

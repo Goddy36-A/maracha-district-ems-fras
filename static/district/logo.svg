@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <circle cx="60" cy="60" r="58" fill="#0d2240" stroke="#1e4d8c" stroke-width="2"/>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#1e4d8c" stroke-width="1" stroke-dasharray="4 2"/>
+  <!-- Shield -->
+  <path d="M60 22 L82 34 L82 62 Q82 82 60 92 Q38 82 38 62 L38 34 Z" fill="#1e4d8c" stroke="#2563eb" stroke-width="1.5"/>
+  <!-- Diagonal stripes on shield -->
+  <path d="M60 22 L82 34 L82 48 L38 48 L38 34 Z" fill="#facc15" opacity="0.85"/>
+  <!-- Star -->
+  <path d="M60 50 L62.4 57.2 L70 57.2 L64 61.6 L66.4 68.8 L60 64.4 L53.6 68.8 L56 61.6 L50 57.2 L57.6 57.2 Z" fill="#fff"/>
+  <!-- Text arc placeholder -->
+  <text x="60" y="108" text-anchor="middle" font-family="sans-serif" font-size="7" font-weight="700" fill="#94a3b8" letter-spacing="1">MARACHA DLG</text>
+</svg>

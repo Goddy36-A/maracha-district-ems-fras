@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Face Scan Logs{% endblock %}
+{% block content %}
+<div style="max-width:1100px;margin:0 auto;padding:24px">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+    <a href="{% url 'face:profiles' %}" style="color:#8b949e;font-size:13px">← Profiles</a>
+    <h1 style="font-size:20px;font-weight:700;margin:0">Face Scan Audit Log</h1>
+  </div>
+  <div style="background:#161b22;border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden">
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:rgba(0,0,0,.2)">
+          <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase;white-space:nowrap">Time</th>
+          <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase">Employee</th>
+          <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase">Result</th>
+          <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase">Confidence</th>
+          <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase">IP</th>
+          <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#484f58;text-transform:uppercase">Note</th>
+        </tr></thead>
+        <tbody>
+          {% for log in page_obj %}
+          {% with r=log.result %}
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+            <td style="padding:10px 14px;font-size:12px;color:#8b949e;font-family:monospace;white-space:nowrap">{{ log.created_at|date:"d M Y H:i" }}</td>
+            <td style="padding:10px 14px;font-size:13px">{% if log.employee %}{{ log.employee.full_name }}<br><span style="font-size:11px;color:#8b949e;font-family:monospace">{{ log.employee.employee_id }}</span>{% else %}<span style="color:#8b949e">Unknown</span>{% endif %}</td>
+            <td style="padding:10px 14px">
+              <span style="padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;font-family:monospace;
+                {% if r == 'MATCHED' %}background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.25)
+                {% elif r == 'NO_MATCH' %}background:rgba(248,81,73,.1);color:#f85149;border:1px solid rgba(248,81,73,.25)
+                {% elif r == 'DUPLICATE' %}background:rgba(227,179,65,.1);color:#e3b341;border:1px solid rgba(227,179,65,.25)
+                {% else %}background:rgba(255,255,255,.05);color:#8b949e;border:1px solid rgba(255,255,255,.1){% endif %}">
+                {{ log.get_result_display }}
+              </span>
+            </td>
+            <td style="padding:10px 14px;font-size:12px;font-family:monospace;color:#8b949e">
+              {% if log.distance %}{{ log.distance|floatformat:3 }}{% else %}—{% endif %}
+            </td>
+            <td style="padding:10px 14px;font-size:11px;color:#8b949e;font-family:monospace">{{ log.ip_address|default:"—" }}</td>
+            <td style="padding:10px 14px;font-size:12px;color:#8b949e">{{ log.note|default:"—" }}</td>
+          </tr>
+          {% endwith %}
+          {% empty %}
+          <tr><td colspan="6" style="padding:40px;text-align:center;color:#8b949e">No scan logs yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if page_obj.has_other_pages %}
+    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:4px">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="btn btn-ghost btn-sm">‹ Prev</a>{% endif %}
+      <span style="padding:5px 10px;font-size:12px;color:#8b949e;font-family:monospace">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="btn btn-ghost btn-sm">Next ›</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

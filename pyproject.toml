@@ -1,0 +1,20 @@
+[project]
+name = "miu-employee-management-system"
+version = "0.1.0"
+description = "Metropolitan International University Employee Management System (MIU-EMS)"
+requires-python = ">=3.12"
+dependencies = [
+    "Django==6.1",
+    "djangorestframework==3.18.0",
+    "django-environ==0.14.0",
+    "pillow==12.1.1",
+    "psycopg2-binary==2.9.12",
+    "gunicorn==23.0.0",
+    "whitenoise==6.12.0",
+]
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"

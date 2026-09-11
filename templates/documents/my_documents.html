@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}My Documents{% endblock %}
+{% block content %}
+<h2>My Documents</h2>
+<table class="miu-table">
+  <thead><tr><th>Title</th><th>Category</th><th>Uploaded</th><th></th></tr></thead>
+  <tbody>
+    {% for d in documents %}
+    <tr><td>{{ d.title }}</td><td>{{ d.get_category_display }}</td><td>{{ d.created_at|date:"Y-m-d" }}</td>
+      <td><a href="{% url 'documents:download' d.pk %}">Download</a></td></tr>
+    {% empty %}<tr><td colspan="4">No documents on file.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

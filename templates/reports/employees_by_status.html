@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Employees by Status</h2>
+<table class="miu-table"><thead><tr><th>Status</th><th>Count</th></tr></thead><tbody>
+{% for d in data %}<tr><td>{{ d.employment_status }}</td><td>{{ d.count }}</td></tr>{% empty %}<tr><td colspan="2">No data.</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

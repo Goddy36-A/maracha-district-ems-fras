@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: miu-ems
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: "3.12.3"
+      - key: WEB_CONCURRENCY
+        value: "2"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: miu-ems-db
+          property: connectionString
+      # Set these manually in the Render dashboard after first deploy:
+      #   ALLOWED_HOSTS        -> e.g. miu-ems.onrender.com (RENDER_EXTERNAL_HOSTNAME covers this automatically)
+      #   CSRF_TRUSTED_ORIGINS -> e.g. https://miu-ems.onrender.com
+      #   EMAIL_HOST / EMAIL_HOST_USER / EMAIL_HOST_PASSWORD -> for password reset emails
+    autoDeploy: true
+
+databases:
+  - name: miu-ems-db
+    plan: free
+    databaseName: miu_ems
+    user: miu_ems_user

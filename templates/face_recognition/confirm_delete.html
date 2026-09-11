@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Remove Face Profile{% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:60px auto;padding:24px;background:#161b22;border:1px solid rgba(255,255,255,.1);border-radius:12px">
+  <h2 style="font-size:18px;font-weight:700;margin-bottom:12px">Remove Face Profile</h2>
+  <p style="font-size:13px;color:#8b949e;margin-bottom:20px">Are you sure you want to deactivate the face profile for <strong>{{ employee.full_name }}</strong> ({{ employee.employee_id }})? They will no longer be able to check in via facial recognition.</p>
+  <div style="display:flex;gap:10px">
+    <a href="{% url 'face:profiles' %}" class="btn btn-ghost">Cancel</a>
+    <form method="post"><{% csrf_token %}<button type="submit" class="btn btn-danger">Yes, Remove Profile</button></form>
+  </div>
+</div>
+{% endblock %}

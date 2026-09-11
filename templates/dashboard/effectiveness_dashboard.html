@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}System Effectiveness{% endblock %}
+{% block content %}
+<h2>System Effectiveness Evaluation</h2>
+<p>Compares baseline vs. post-implementation indicators where both have been recorded. Missing data is shown as "Not yet collected" rather than estimated.</p>
+
+<table class="miu-table">
+  <thead><tr><th>Dimension</th><th>Indicator</th><th>Baseline</th><th>Post-Implementation</th><th>Change</th></tr></thead>
+  <tbody>
+    {% for c in comparisons %}
+    <tr>
+      <td>{{ c.dimension }}</td>
+      <td>{{ c.name }}</td>
+      <td>{% if c.baseline %}{{ c.baseline.value }} {{ c.baseline.unit }} <br><small>({{ c.baseline.source_note }})</small>{% else %}<span class="badge badge-muted">Not yet collected</span>{% endif %}</td>
+      <td>{% if c.post %}{{ c.post.value }} {{ c.post.unit }} <br><small>({{ c.post.source_note }})</small>{% else %}<span class="badge badge-muted">Not yet collected</span>{% endif %}</td>
+      <td>{% if c.improvement_pct is not None %}{{ c.improvement_pct }}%{% else %}—{% endif %}</td>
+    </tr>
+    {% empty %}<tr><td colspan="5">No indicators recorded yet. Add them via the Admin Panel (Dashboard → Effectiveness Indicators).</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>User Satisfaction Survey</h3>
+<div class="metric-cards">
+  <div class="metric-card"><div class="value">{{ response_count }}</div><div class="label">Survey Responses</div></div>
+  <div class="metric-card"><div class="value">{{ overall_satisfaction_mean|default:"Not yet collected" }}</div><div class="label">Mean Satisfaction Score (1-5)</div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — {{ miu_branding.SYSTEM_NAME }}</title>
+    <link rel="stylesheet" href="{% static 'css/miu-theme.css' %}">
+</head>
+<body>
+<div class="login-page">
+    <div class="login-card">
+        <img src="{% static miu_branding.LOGO_STATIC_PATH %}" alt="{{ miu_branding.INSTITUTION_SHORT_NAME }} logo">
+        <h1>{{ miu_branding.INSTITUTION_NAME }}</h1>
+        <div class="system-name">{{ miu_branding.SYSTEM_NAME }}</div>
+
+        {% if form.errors %}
+            <ul class="messages"><li class="error">Invalid credentials, or your account may be locked.</li></ul>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.username }}
+            {{ form.password }}
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p style="margin-top:1rem;"><a href="{% url 'accounts:password_reset' %}">Forgot Password?</a></p>
+    </div>
+</div>
+</body>
+</html>
