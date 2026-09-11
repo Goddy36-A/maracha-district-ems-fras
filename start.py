@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-MIU-EMS Local Startup — Run: python start.py
+Maracha District EMS Local Startup — Run: python start.py
 Does everything automatically. No manual config needed.
 """
 import os, sys, subprocess, time, webbrowser
@@ -9,7 +9,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 ENV_FILE  = BASE_DIR / ".env"
 SETTINGS  = "config.settings.development"
-ADMIN     = {"username": "admin", "password": "Admin@12345", "email": "admin@miu.ac.ug"}
+ADMIN     = {"username": "admin", "password": "Admin@12345", "email": "admin@maracha.go.ug"}
 
 # ── Set env var immediately at module level so django.setup() always works ──
 os.environ["DJANGO_SETTINGS_MODULE"] = SETTINGS
@@ -25,8 +25,8 @@ def hdr(msg):  print(f"\n{BOLD}{msg}{RESET}")
 def banner():
     print(f"""
 {BOLD}╔══════════════════════════════════════════╗
-║   Metropolitan International University  ║
-║   Employee Management System — Local     ║
+║   Maracha District Local Government     ║
+║   Employee Management System — Local    ║
 ╚══════════════════════════════════════════╝{RESET}
 """)
 
@@ -64,35 +64,6 @@ def install_deps():
     ok("Dependencies ready")
 
 
-def install_deps():
-    """Install packages one by one — skips any that fail (e.g. psycopg2 without PostgreSQL)."""
-    info("Installing dependencies...")
-    req_file = BASE_DIR / "requirements.txt"
-    if not req_file.exists():
-        print(f"{YELLOW}⚠️  requirements.txt not found — skipping{RESET}")
-        return
-
-    lines = req_file.read_text(encoding="utf-8").splitlines()
-    pkgs  = [l.strip() for l in lines if l.strip() and not l.strip().startswith("#")]
-    failed = []
-    for pkg in pkgs:
-        r = subprocess.run(
-            [sys.executable, "-m", "pip", "install", pkg, "-q",
-             "--only-binary=:all:", "--no-build-isolation"],
-            capture_output=True
-        )
-        if r.returncode != 0:
-            r2 = subprocess.run(
-                [sys.executable, "-m", "pip", "install", pkg, "-q"],
-                capture_output=True
-            )
-            if r2.returncode != 0:
-                failed.append(pkg)
-                print(f"{YELLOW}  ⚠ Skipped (not available locally): {pkg}{RESET}")
-    if failed:
-        print(f"{YELLOW}  Skipped {len(failed)} package(s) — normal for SQLite local setup.{RESET}")
-    ok("Dependencies ready")
-
 def fix_env():
     if ENV_FILE.exists():
         lines = ENV_FILE.read_text(encoding="utf-8").splitlines()
@@ -113,7 +84,7 @@ def fix_env():
     else:
         ENV_FILE.write_text(
             f"DJANGO_SETTINGS_MODULE={SETTINGS}\n"
-            "SECRET_KEY=django-insecure-miu-local-dev-only\n"
+            "SECRET_KEY=django-insecure-maracha-local-dev-only\n"
             "DEBUG=True\n", encoding="utf-8"
         )
         ok(".env created for local development")
@@ -169,7 +140,7 @@ def create_admin():
         print(f"{YELLOW}⚠️  Admin reset: {e}{RESET}")
 
 def seed_demo_data():
-    """Seed realistic MIU demo data for presentation."""
+    """Seed realistic Maracha District demo data for presentation."""
     import django
     django.setup()
 
@@ -183,16 +154,16 @@ def seed_demo_data():
     User  = get_user_model()
     today = datetime.date.today()
 
-    hdr("Seeding demo data...")
+    hdr("Seeding demo data for Maracha District...")
 
     # ── Departments ──────────────────────────────────────────────────
     dept_data = [
-        ("Faculty of Computing & Information Technology", "FCIT"),
-        ("Faculty of Business & Management",              "FBM"),
-        ("Faculty of Education",                          "FED"),
-        ("Human Resources Department",                    "HRD"),
-        ("Finance Department",                            "FIN"),
-        ("Registry & Academic Affairs",                   "RAA"),
+        ("Education Department",                           "EDU"),
+        ("Health Department",                              "HLT"),
+        ("Local Government Administration",                "LGA"),
+        ("Finance & Planning Department",                  "FIN"),
+        ("Infrastructure & Works Department",              "INF"),
+        ("Production & Marketing Department",              "PMK"),
     ]
     depts = {}
     for name, code in dept_data:
@@ -202,12 +173,12 @@ def seed_demo_data():
 
     # ── Positions ────────────────────────────────────────────────────
     pos_data = [
-        ("Lecturer",            "FCIT"), ("Senior Lecturer",   "FCIT"),
-        ("HOD Computing",       "FCIT"), ("Lecturer",           "FBM"),
-        ("Senior Lecturer",     "FBM"),  ("Lecturer",           "FED"),
-        ("HR Officer",          "HRD"),  ("HR Manager",         "HRD"),
-        ("Finance Officer",     "FIN"),  ("Registrar",          "RAA"),
-        ("Assistant Registrar", "RAA"),
+        ("District Education Officer",  "EDU"), ("School Inspector",            "EDU"),
+        ("District Health Officer",     "HLT"), ("Health Facility Supervisor",  "HLT"),
+        ("District Commissioner",       "LGA"), ("Administrative Officer",      "LGA"),
+        ("Chief Finance Officer",       "FIN"), ("Budget Officer",              "FIN"),
+        ("Director of Works",           "INF"), ("Engineer",                    "INF"),
+        ("Production Officer",          "PMK"), ("Marketing Officer",           "PMK"),
     ]
     positions = {}
     for title, code in pos_data:
@@ -221,7 +192,7 @@ def seed_demo_data():
         ("Sick Leave",          10, "Medical/illness leave"),
         ("Maternity Leave",     60, "Maternity leave for female staff"),
         ("Paternity Leave",      5, "Paternity leave for male staff"),
-        ("Study Leave",         14, "Leave for academic or professional study"),
+        ("Study Leave",         14, "Leave for professional development"),
         ("Compassionate Leave",  3, "Bereavement or family emergency"),
         ("Unpaid Leave",         0, "Leave without pay, approved by management"),
     ]
@@ -229,18 +200,18 @@ def seed_demo_data():
         LeaveType.objects.get_or_create(name=name, defaults={"default_annual_days": days, "description": desc})
     ok(f"Leave types ready ({len(leave_types)})")
 
-    # ── Demo Employees + User Accounts ───────────────────────────────
+    # ── Demo Employees + User Accounts (Maracha District) ──────────────
     employees_data = [
-        ("MIU-2023-001","Grace",    "Nakato",    "g.nakato@miu.ac.ug",   "FCIT","HOD Computing",    "FULL_TIME","nakato",    "Pass@2025","DEPARTMENT_HEAD"),
-        ("MIU-2023-002","Robert",   "Mugisha",   "r.mugisha@miu.ac.ug",  "FCIT","Senior Lecturer",  "FULL_TIME","mugisha",   "Pass@2025","EMPLOYEE"),
-        ("MIU-2023-003","Patricia", "Auma",      "p.auma@miu.ac.ug",     "FBM", "Lecturer",         "FULL_TIME","auma",      "Pass@2025","EMPLOYEE"),
-        ("MIU-2024-001","David",    "Ssemakula", "d.ssemakula@miu.ac.ug","FED", "Lecturer",         "FULL_TIME","ssemakula", "Pass@2025","EMPLOYEE"),
-        ("MIU-2022-001","Florence", "Nabirye",   "f.nabirye@miu.ac.ug",  "HRD", "HR Manager",       "FULL_TIME","nabirye",   "Pass@2025","HR"),
-        ("MIU-2022-002","Joseph",   "Okello",    "j.okello@miu.ac.ug",   "HRD", "HR Officer",       "FULL_TIME","okello",    "Pass@2025","HR"),
-        ("MIU-2021-001","Sarah",    "Kyomugisha","s.kyomugisha@miu.ac.ug","FIN","Finance Officer",   "FULL_TIME","kyomugisha","Pass@2025","EMPLOYEE"),
-        ("MIU-2020-001","Emmanuel", "Tumwine",   "e.tumwine@miu.ac.ug",  "RAA", "Registrar",        "FULL_TIME","tumwine",   "Pass@2025","MANAGEMENT"),
-        ("MIU-2024-002","Brenda",   "Atim",      "b.atim@miu.ac.ug",     "FBM", "Senior Lecturer",  "FULL_TIME","atim",      "Pass@2025","EMPLOYEE"),
-        ("MIU-2024-003","Moses",    "Wanyama",   "m.wanyama@miu.ac.ug",  "FCIT","Lecturer",         "CONTRACT", "wanyama",  "Pass@2025","EMPLOYEE"),
+        ("MAR-2023-001","Peter",    "Otim",      "p.otim@maracha.go.ug",    "EDU","District Education Officer","FULL_TIME","otim",      "Pass@2025","DEPARTMENT_HEAD"),
+        ("MAR-2023-002","Alice",    "Akello",    "a.akello@maracha.go.ug",  "EDU","School Inspector",         "FULL_TIME","akello",    "Pass@2025","EMPLOYEE"),
+        ("MAR-2023-003","Samuel",   "Lokwang",   "s.lokwang@maracha.go.ug", "HLT","District Health Officer",  "FULL_TIME","lokwang",   "Pass@2025","EMPLOYEE"),
+        ("MAR-2024-001","Mary",     "Adwok",     "m.adwok@maracha.go.ug",   "HLT","Health Facility Supervisor","FULL_TIME","adwok",     "Pass@2025","EMPLOYEE"),
+        ("MAR-2022-001","Joseph",   "Awol",      "j.awol@maracha.go.ug",    "LGA","District Commissioner",    "FULL_TIME","awol",      "Pass@2025","HR"),
+        ("MAR-2022-002","Grace",    "Lematec",   "g.lematec@maracha.go.ug", "LGA","Administrative Officer",   "FULL_TIME","lematec",   "Pass@2025","HR"),
+        ("MAR-2021-001","John",     "Lomongin",  "j.lomongin@maracha.go.ug","FIN","Chief Finance Officer",    "FULL_TIME","lomongin",  "Pass@2025","EMPLOYEE"),
+        ("MAR-2020-001","Catherine","Omoding",   "c.omoding@maracha.go.ug", "INF","Director of Works",        "FULL_TIME","omoding",   "Pass@2025","MANAGEMENT"),
+        ("MAR-2024-002","Geoffrey", "Lolem",     "g.lolem@maracha.go.ug",   "INF","Engineer",                 "FULL_TIME","lolem",     "Pass@2025","EMPLOYEE"),
+        ("MAR-2024-003","Beatrice", "Lokwang",   "b.lokwang@maracha.go.ug", "PMK","Production Officer",       "CONTRACT", "lokwang2", "Pass@2025","EMPLOYEE"),
     ]
     created = 0
     for (eid, fn, ln, email, dcode, pos, etype, uname, pwd, role) in employees_data:
@@ -269,7 +240,7 @@ def seed_demo_data():
         admin_user = User.objects.get(username=ADMIN["username"])
         if not hasattr(admin_user, "employee_profile") or admin_user.employee_profile is None:
             Employee.objects.get_or_create(
-                employee_id="MIU-ADMIN-001",
+                employee_id="MAR-ADMIN-001",
                 defaults={
                     "user": admin_user, "first_name": "System", "last_name": "Administrator",
                     "email": ADMIN["email"], "employment_type": "FULL_TIME",
@@ -305,15 +276,15 @@ def seed_demo_data():
     hdr("Demo data ready.")
     print(f"""
   {BOLD}Presentation accounts:{RESET}
-  ┌─────────────┬──────────────┬─────────────────┐
-  │ Username    │ Password     │ Role            │
-  ├─────────────┼──────────────┼─────────────────┤
-  │ admin       │ Admin@12345  │ Administrator   │
-  │ nabirye     │ Pass@2025    │ HR Manager      │
-  │ nakato      │ Pass@2025    │ Department Head │
-  │ mugisha     │ Pass@2025    │ Employee        │
-  │ tumwine     │ Pass@2025    │ Management      │
-  └─────────────┴──────────────┴─────────────────┘
+  ┌──────────────┬──────────────┬──────────────────┐
+  │ Username     │ Password     │ Role             │
+  ├──────────────┼──────────────┼──────────────────┤
+  │ admin        │ Admin@12345  │ Administrator    │
+  │ awol         │ Pass@2025    │ HR Manager       │
+  │ otim         │ Pass@2025    │ Department Head  │
+  │ akello       │ Pass@2025    │ Employee         │
+  │ omoding      │ Pass@2025    │ Management       │
+  └──────────────┴──────────────┴──────────────────┘
 """)
 
 def start_server():
