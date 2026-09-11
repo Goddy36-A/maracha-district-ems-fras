@@ -4,87 +4,156 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Face Check-In — Maracha District Local Government</title>
-<link rel="stylesheet" href="{% static 'css/theme.css' %}"/>
+<title>Face Attendance — Maracha District Local Government</title>
 <style>
-  body { margin:0; background:#0d1117; color:#e6edf3; font-family:'Inter',sans-serif; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
-  .kiosk-header { display:flex; align-items:center; gap:12px; padding:14px 24px; background:#0d1117; border-bottom:1px solid rgba(255,255,255,.08); flex-shrink:0; }
-  .kiosk-header img { height:38px; }
-  .kiosk-header-text h1 { font-size:16px; font-weight:700; margin:0; }
-  .kiosk-header-text p  { font-size:11px; color:#8b949e; margin:0; font-family:monospace; }
-  .kiosk-header-clock { margin-left:auto; font-family:monospace; font-size:22px; color:#4ade80; letter-spacing:2px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;height:100vh;overflow:hidden;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 
-  .kiosk-body { flex:1; display:grid; grid-template-columns:1fr 340px; gap:0; overflow:hidden; }
+/* HEADER */
+.kiosk-header{display:flex;align-items:center;gap:14px;padding:0 24px;height:58px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.kiosk-header img{height:36px}
+.header-text h1{font-size:15px;font-weight:700;margin:0}
+.header-text p{font-size:11px;color:#8b949e;margin:0}
+.kiosk-clock{margin-left:auto;font-family:monospace;font-size:24px;font-weight:700;color:#e6edf3;letter-spacing:2px}
 
-  .camera-panel { position:relative; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-  #video  { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
-  #canvas { position:absolute; top:0; left:0; width:100%; height:100%; transform:scaleX(-1); pointer-events:none; }
+/* MODE SWITCHER — the main change */
+.mode-bar{display:flex;align-items:center;justify-content:center;gap:0;padding:10px 24px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.mode-btn{
+  flex:1;max-width:220px;padding:11px 20px;font-size:15px;font-weight:700;
+  border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+  color:#8b949e;cursor:pointer;transition:all .2s;letter-spacing:.3px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.mode-btn:first-child{border-radius:10px 0 0 10px}
+.mode-btn:last-child {border-radius:0 10px 10px 0;border-left:none}
+.mode-btn.active-checkin {
+  background:rgba(74,222,128,.12);border-color:#4ade80;color:#4ade80;
+  box-shadow:0 0 20px rgba(74,222,128,.15);
+}
+.mode-btn.active-checkout{
+  background:rgba(88,166,255,.12);border-color:#58a6ff;color:#58a6ff;
+  box-shadow:0 0 20px rgba(88,166,255,.15);
+}
+.mode-icon{font-size:20px}
+.mode-label{display:flex;flex-direction:column;text-align:left;line-height:1.2}
+.mode-label span:first-child{font-size:15px;font-weight:700}
+.mode-label span:last-child{font-size:10px;font-weight:400;opacity:.7;letter-spacing:.5px}
 
-  .scan-ring {
-    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    width:220px; height:220px; border-radius:50%;
-    border:3px solid rgba(74,222,128,.4);
-    box-shadow:0 0 0 2px rgba(74,222,128,.1), inset 0 0 0 2px rgba(74,222,128,.1);
-    pointer-events:none; transition:border-color .3s, box-shadow .3s;
-  }
-  .scan-ring.detecting { border-color:rgba(74,222,128,.9); box-shadow:0 0 20px rgba(74,222,128,.3); animation:pulse 1.2s ease infinite; }
-  @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(74,222,128,.3)} 50%{box-shadow:0 0 40px rgba(74,222,128,.5)} }
-  .scan-ring.matched  { border-color:#4ade80; box-shadow:0 0 40px rgba(74,222,128,.6); }
-  .scan-ring.error    { border-color:#f85149; box-shadow:0 0 20px rgba(248,81,73,.4); }
+/* BODY */
+.kiosk-body{flex:1;display:grid;grid-template-columns:1fr 340px;overflow:hidden}
 
-  .camera-hint { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.65); padding:8px 16px; border-radius:20px; font-size:12px; color:#8b949e; pointer-events:none; white-space:nowrap; }
+/* CAMERA */
+.cam-panel{position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#video {width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+#canvas{position:absolute;top:0;left:0;width:100%;height:100%;transform:scaleX(-1);pointer-events:none}
 
-  .result-panel { background:#0d1117; border-left:1px solid rgba(255,255,255,.08); display:flex; flex-direction:column; overflow-y:auto; }
+.scan-ring{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:230px;height:230px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.15);pointer-events:none;
+  transition:border-color .3s,box-shadow .3s;
+}
+.scan-ring.mode-checkin {border-color:rgba(74,222,128,.35)}
+.scan-ring.mode-checkout{border-color:rgba(88,166,255,.35)}
+.scan-ring.detecting.mode-checkin {border-color:#4ade80;box-shadow:0 0 30px rgba(74,222,128,.35);animation:pulseG 1.2s ease infinite}
+.scan-ring.detecting.mode-checkout{border-color:#58a6ff;box-shadow:0 0 30px rgba(88,166,255,.35);animation:pulseB 1.2s ease infinite}
+.scan-ring.result-ok  {border-color:#4ade80;box-shadow:0 0 50px rgba(74,222,128,.5)}
+.scan-ring.result-ok.mode-checkout{border-color:#58a6ff;box-shadow:0 0 50px rgba(88,166,255,.5)}
+.scan-ring.result-err {border-color:#f85149;box-shadow:0 0 30px rgba(248,81,73,.35)}
+@keyframes pulseG{0%,100%{box-shadow:0 0 20px rgba(74,222,128,.25)}50%{box-shadow:0 0 40px rgba(74,222,128,.5)}}
+@keyframes pulseB{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.25)}50%{box-shadow:0 0 40px rgba(88,166,255,.5)}}
 
-  .status-box { padding:24px 20px; border-bottom:1px solid rgba(255,255,255,.06); }
-  .status-label { font-size:10px; letter-spacing:1px; color:#484f58; font-family:monospace; margin-bottom:10px; text-transform:uppercase; }
-  .status-icon  { font-size:48px; text-align:center; margin-bottom:12px; }
-  .status-title { font-size:18px; font-weight:700; text-align:center; line-height:1.3; }
-  .status-sub   { font-size:13px; color:#8b949e; text-align:center; margin-top:6px; }
-  .status-meta  { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
-  .meta-item    { background:#161b22; border:1px solid rgba(255,255,255,.07); border-radius:8px; padding:10px; }
-  .meta-key     { font-size:9px; color:#484f58; font-family:monospace; letter-spacing:.5px; text-transform:uppercase; margin-bottom:4px; }
-  .meta-val     { font-size:14px; font-weight:600; }
+/* Mode watermark on camera */
+.cam-mode-badge{
+  position:absolute;top:16px;left:16px;
+  padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;
+  backdrop-filter:blur(6px);
+}
+.cam-mode-badge.mode-checkin {background:rgba(74,222,128,.2);color:#4ade80;border:1px solid rgba(74,222,128,.4)}
+.cam-mode-badge.mode-checkout{background:rgba(88,166,255,.2);color:#58a6ff;border:1px solid rgba(88,166,255,.4)}
 
-  .history-box  { padding:16px 20px; flex:1; }
-  .history-title { font-size:11px; font-weight:700; letter-spacing:.5px; color:#484f58; text-transform:uppercase; font-family:monospace; margin-bottom:10px; }
-  .history-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; margin-bottom:6px; font-size:12px; background:#161b22; border:1px solid rgba(255,255,255,.05); }
-  .history-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-  .history-name { font-weight:600; flex:1; }
-  .history-time { color:#484f58; font-family:monospace; font-size:11px; flex-shrink:0; }
+.cam-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);padding:8px 18px;border-radius:20px;font-size:12px;color:#8b949e;white-space:nowrap;pointer-events:none}
+.loading-msg{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);padding:6px 14px;border-radius:6px;font-size:11px;color:#8b949e;font-family:monospace}
 
-  .loading-status { position:absolute; bottom:60px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.75); padding:6px 14px; border-radius:6px; font-size:11px; color:#8b949e; font-family:monospace; }
+/* RESULT PANEL */
+.result-panel{background:#0d1117;border-left:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;overflow-y:auto}
 
-  @media(max-width:768px) { .kiosk-body { grid-template-columns:1fr; } .result-panel { display:none; } }
+.status-box{padding:22px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.status-label{font-size:9px;letter-spacing:1.2px;color:#484f58;font-family:monospace;margin-bottom:10px;text-transform:uppercase}
+.status-icon {font-size:52px;text-align:center;margin-bottom:10px;line-height:1}
+.status-title{font-size:17px;font-weight:700;text-align:center;line-height:1.35;min-height:48px}
+.status-sub  {font-size:12px;color:#8b949e;text-align:center;margin-top:6px;min-height:18px}
+
+.result-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.result-card {background:#161b22;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px 12px}
+.rc-key{font-size:9px;color:#484f58;font-family:monospace;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.rc-val{font-size:14px;font-weight:600}
+
+/* HISTORY */
+.history-box{padding:16px 20px;flex:1}
+.history-title{font-size:10px;font-weight:700;letter-spacing:.8px;color:#484f58;text-transform:uppercase;font-family:monospace;margin-bottom:10px}
+.history-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;margin-bottom:5px;font-size:12px;background:#161b22;border:1px solid rgba(255,255,255,.05)}
+.h-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.h-name{font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.h-action{font-size:10px;font-family:monospace;padding:2px 6px;border-radius:4px;flex-shrink:0}
+.h-action.in {background:rgba(74,222,128,.1);color:#4ade80}
+.h-action.out{background:rgba(88,166,255,.1);color:#58a6ff}
+.h-time{color:#484f58;font-family:monospace;font-size:11px;flex-shrink:0}
+
+@media(max-width:768px){.kiosk-body{grid-template-columns:1fr}.result-panel{display:none}}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="kiosk-header">
   <img src="{% static 'district/logo.svg' %}" alt="Maracha DLG"/>
-  <div class="kiosk-header-text">
+  <div class="header-text">
     <h1>Maracha District Local Government</h1>
-    <p>Facial Recognition Attendance System — Staff Check-In / Check-Out</p>
+    <p>Facial Recognition Attendance Terminal</p>
   </div>
-  <div class="kiosk-header-clock" id="kioskClock">--:--:--</div>
+  <div class="kiosk-clock" id="kioskClock">--:--:--</div>
 </div>
 
+<!-- MODE SWITCHER -->
+<div class="mode-bar">
+  <button class="mode-btn active-checkin" id="btnCheckin" onclick="setMode('checkin')">
+    <span class="mode-icon">🟢</span>
+    <span class="mode-label">
+      <span>Check In</span>
+      <span>ARRIVING</span>
+    </span>
+  </button>
+  <button class="mode-btn" id="btnCheckout" onclick="setMode('checkout')">
+    <span class="mode-icon">🔵</span>
+    <span class="mode-label">
+      <span>Check Out</span>
+      <span>LEAVING</span>
+    </span>
+  </button>
+</div>
+
+<!-- BODY -->
 <div class="kiosk-body">
-  <div class="camera-panel" id="cameraPanel">
+
+  <!-- CAMERA -->
+  <div class="cam-panel" id="camPanel">
     <video id="video" autoplay muted playsinline></video>
     <canvas id="canvas"></canvas>
-    <div class="scan-ring" id="scanRing"></div>
-    <div class="camera-hint" id="cameraHint">Position your face inside the ring</div>
-    <div class="loading-status" id="loadingStatus">Loading face recognition models…</div>
+    <div class="scan-ring mode-checkin" id="scanRing"></div>
+    <div class="cam-mode-badge mode-checkin" id="camModeBadge">● CHECK IN</div>
+    <div class="cam-hint" id="camHint">Position your face inside the ring</div>
+    <div class="loading-msg" id="loadingMsg">Loading face recognition models…</div>
   </div>
 
+  <!-- RESULT PANEL -->
   <div class="result-panel">
     <div class="status-box">
       <div class="status-label">Last Result</div>
-      <div id="statusIcon" class="status-icon">🔍</div>
-      <div id="statusTitle" class="status-title">Waiting for face…</div>
-      <div id="statusSub" class="status-sub">Stand in front of the camera</div>
-      <div id="statusMeta" class="status-meta" style="display:none"></div>
+      <div class="status-icon" id="statusIcon">🔍</div>
+      <div class="status-title" id="statusTitle" style="color:#8b949e">Waiting for face…</div>
+      <div class="status-sub"   id="statusSub">Stand in front of the camera</div>
+      <div class="result-cards" id="resultCards" style="display:none"></div>
     </div>
     <div class="history-box">
       <div class="history-title">Today's Activity</div>
@@ -101,145 +170,217 @@ const VERIFY_URL = '{% url "face:api_verify" %}';
 const video       = document.getElementById('video');
 const canvas      = document.getElementById('canvas');
 const scanRing    = document.getElementById('scanRing');
+const camBadge    = document.getElementById('camModeBadge');
+const camHint     = document.getElementById('camHint');
+const loadingMsg  = document.getElementById('loadingMsg');
 const statusIcon  = document.getElementById('statusIcon');
 const statusTitle = document.getElementById('statusTitle');
 const statusSub   = document.getElementById('statusSub');
-const statusMeta  = document.getElementById('statusMeta');
+const resultCards = document.getElementById('resultCards');
 const historyList = document.getElementById('historyList');
-const loadingSt   = document.getElementById('loadingStatus');
-const hint        = document.getElementById('cameraHint');
 
+let mode         = 'checkin';
 let modelsLoaded = false;
 let scanning     = false;
-let cooldown     = false;   // prevent hammering the API
+let cooldown     = false;
 const history    = [];
 
-// Clock
+// ── CLOCK ──────────────────────────────────────────────────────────────────
 setInterval(() => {
   document.getElementById('kioskClock').textContent =
-    new Date().toLocaleTimeString('en-UG', {hour12:false});
+    new Date().toLocaleTimeString('en-UG', {hour12: false});
 }, 1000);
 
+// ── MODE SWITCHER ──────────────────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  const isIn = m === 'checkin';
+
+  // Buttons
+  document.getElementById('btnCheckin').className  = 'mode-btn' + (isIn  ? ' active-checkin'  : '');
+  document.getElementById('btnCheckout').className = 'mode-btn' + (!isIn ? ' active-checkout' : '');
+
+  // Camera ring + badge
+  scanRing.className = 'scan-ring mode-' + m;
+  camBadge.className = 'cam-mode-badge mode-' + m;
+  camBadge.textContent = isIn ? '● CHECK IN' : '● CHECK OUT';
+
+  // Reset result panel to neutral
+  statusIcon.textContent  = isIn ? '🟢' : '🔵';
+  statusTitle.textContent = isIn ? 'Ready to check in' : 'Ready to check out';
+  statusTitle.style.color = isIn ? '#4ade80' : '#58a6ff';
+  statusSub.textContent   = 'Stand in front of the camera';
+  resultCards.style.display = 'none';
+}
+
+// ── MODEL + CAMERA BOOT ────────────────────────────────────────────────────
 async function boot() {
   try {
+    loadingMsg.textContent = 'Loading recognition model (1/3)…';
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    loadingMsg.textContent = 'Loading landmark model (2/3)…';
     await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+    loadingMsg.textContent = 'Loading embedding model (3/3)…';
     await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
     modelsLoaded = true;
-    loadingSt.textContent = 'Models ready — starting camera…';
+    loadingMsg.textContent = 'Starting camera…';
     await startCamera();
   } catch(e) {
-    loadingSt.textContent = 'Error loading models: ' + e.message;
+    loadingMsg.textContent = 'Error: ' + e.message;
+    loadingMsg.style.color = '#f85149';
   }
 }
 
 async function startCamera() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user', width:640, height:480 } });
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+    });
     video.srcObject = stream;
     video.addEventListener('playing', () => {
       canvas.width  = video.videoWidth;
       canvas.height = video.videoHeight;
-      loadingSt.style.display = 'none';
-      hint.textContent = 'Position your face inside the ring';
+      loadingMsg.style.display = 'none';
       scanLoop();
     });
   } catch(e) {
-    loadingSt.textContent = 'Camera access denied: ' + e.message;
+    loadingMsg.textContent = 'Camera error: ' + e.message;
+    loadingMsg.style.color = '#f85149';
   }
 }
+
+// ── SCAN LOOP ──────────────────────────────────────────────────────────────
+const OPTS = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 });
 
 async function scanLoop() {
   if (!modelsLoaded || cooldown) { requestAnimationFrame(scanLoop); return; }
 
-  const opts = new faceapi.TinyFaceDetectorOptions({ inputSize:416, scoreThreshold:0.5 });
-  const result = await faceapi.detectSingleFace(video, opts).withFaceLandmarks().withFaceDescriptor();
+  const result = await faceapi.detectSingleFace(video, OPTS)
+    .withFaceLandmarks().withFaceDescriptor();
 
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (result) {
     scanRing.classList.add('detecting');
-    hint.textContent = 'Face detected — verifying…';
+    camHint.textContent = 'Face detected — hold still…';
 
-    // Draw landmarks (subtle)
-    const dims = faceapi.matchDimensions(canvas, video, true);
+    const dims    = faceapi.matchDimensions(canvas, video, true);
     const resized = faceapi.resizeResults(result, dims);
-    faceapi.draw.drawFaceLandmarks(canvas, resized, { drawLines:true, color:'rgba(74,222,128,0.3)' });
+    faceapi.draw.drawFaceLandmarks(canvas, resized, {
+      drawLines: true,
+      color: mode === 'checkin' ? 'rgba(74,222,128,0.4)' : 'rgba(88,166,255,0.4)',
+    });
 
     if (!scanning) {
       scanning = true;
-      const descriptor = Array.from(result.descriptor);
-      await verifyFace(descriptor);
+      await verifyFace(Array.from(result.descriptor));
       scanning = false;
     }
   } else {
-    scanRing.classList.remove('detecting', 'matched', 'error');
-    hint.textContent = 'Position your face inside the ring';
+    scanRing.classList.remove('detecting', 'result-ok', 'result-err');
+    camHint.textContent = 'Position your face inside the ring';
   }
 
   requestAnimationFrame(scanLoop);
 }
 
+// ── API CALL ───────────────────────────────────────────────────────────────
 async function verifyFace(descriptor) {
   try {
-    const res = await fetch(VERIFY_URL, {
-      method: 'POST',
+    const res  = await fetch(VERIFY_URL, {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ descriptor }),
+      body:    JSON.stringify({ descriptor, mode }),
     });
     const data = await res.json();
     showResult(data);
-
-    // Cooldown: wait 4s before scanning again to avoid duplicate hits
     cooldown = true;
-    setTimeout(() => { cooldown = false; }, 4000);
+    setTimeout(() => { cooldown = false; }, data.ok ? 5000 : 3000);
   } catch(e) {
-    showResult({ ok:false, result:'ERROR', message:'Connection error.' });
+    showResult({ ok: false, result: 'ERROR', message: 'Connection error. Please try again.' });
     cooldown = true;
     setTimeout(() => { cooldown = false; }, 3000);
   }
 }
 
+// ── RENDER RESULT ──────────────────────────────────────────────────────────
 function showResult(data) {
-  const iconMap = { MATCHED:'✅', CHECKOUT:'👋', NO_MATCH:'❌', DUPLICATE:'⚠️', ERROR:'🔴' };
-  const colorMap = { MATCHED:'#4ade80', CHECKOUT:'#58a6ff', NO_MATCH:'#f85149', DUPLICATE:'#e3b341', ERROR:'#f85149' };
-  const result = data.result || (data.ok ? 'MATCHED' : 'NO_MATCH');
-  const color  = colorMap[result] || '#8b949e';
+  const r = data.result || (data.ok ? 'OK' : 'FAIL');
 
-  scanRing.classList.toggle('matched', data.ok);
-  scanRing.classList.toggle('error', !data.ok);
+  const cfg = {
+    CHECKIN:   { icon:'✅', color:'#4ade80', ring:'result-ok'  },
+    CHECKOUT:  { icon:'👋', color:'#58a6ff', ring:'result-ok'  },
+    NO_MATCH:  { icon:'❌', color:'#f85149', ring:'result-err' },
+    NO_CHECKIN:{ icon:'⚠️', color:'#e3b341', ring:'result-err' },
+    DUPLICATE: { icon:'⚠️', color:'#e3b341', ring:'result-err' },
+    ERROR:     { icon:'🔴', color:'#f85149', ring:'result-err' },
+  }[r] || { icon:'❓', color:'#8b949e', ring:'' };
 
-  statusIcon.textContent  = iconMap[result] || '❓';
-  statusTitle.style.color = color;
+  scanRing.classList.remove('result-ok', 'result-err');
+  if (cfg.ring) scanRing.classList.add(cfg.ring);
+
+  statusIcon.textContent  = cfg.icon;
+  statusTitle.style.color = cfg.color;
   statusTitle.textContent = data.message || 'Unknown result';
   statusSub.textContent   = data.ok
-    ? (data.distance != null ? `Confidence: ${Math.round((1-data.distance)*100)}%` : '')
-    : 'Please try again or see the front desk';
+    ? (data.distance != null ? `Confidence: ${Math.round((1 - data.distance) * 100)}%` : '')
+    : '';
 
-  if (data.ok && data.employee_name) {
-    statusMeta.style.display = 'grid';
-    statusMeta.innerHTML = `
-      <div class="meta-item"><div class="meta-key">Employee ID</div><div class="meta-val">${data.employee_id||'—'}</div></div>
-      <div class="meta-item"><div class="meta-key">Department</div><div class="meta-val">${data.department||'—'}</div></div>
-      <div class="meta-item"><div class="meta-key">Time</div><div class="meta-val">${data.check_in_time||data.check_out_time||'—'}</div></div>
-      <div class="meta-item"><div class="meta-key">Status</div><div class="meta-val" style="color:${color}">${result}</div></div>`;
+  // Detail cards for successful results
+  if (data.ok) {
+    resultCards.style.display = 'grid';
+    const cards = [];
 
-    // Add to today's history
-    history.unshift({ name:data.employee_name, result, time:data.check_in_time||data.check_out_time||'', color });
-    if (history.length > 10) history.pop();
-    historyList.innerHTML = history.map(h =>
-      `<div class="history-item">
-        <div class="history-dot" style="background:${h.color}"></div>
-        <div class="history-name">${h.name}</div>
-        <div class="history-time">${h.time}</div>
+    if (data.employee_id)   cards.push(['Employee ID', data.employee_id]);
+    if (data.department)    cards.push(['Department',  data.department]);
+
+    if (r === 'CHECKIN') {
+      cards.push(['Checked In',  data.time || '—']);
+      cards.push(['Status',      data.status || 'PRESENT']);
+    }
+    if (r === 'CHECKOUT') {
+      cards.push(['Checked In',  data.check_in_time  || '—']);
+      cards.push(['Checked Out', data.check_out_time || '—']);
+      cards.push(['Hours Worked',data.hours_worked ? data.hours_worked + 'h' : '—']);
+    }
+
+    resultCards.innerHTML = cards.map(([k,v]) =>
+      `<div class="result-card">
+        <div class="rc-key">${k}</div>
+        <div class="rc-val" style="color:${cfg.color}">${v}</div>
       </div>`).join('');
   } else {
-    statusMeta.style.display = 'none';
+    resultCards.style.display = 'none';
+  }
+
+  // Add to today's history log
+  if (data.employee_name) {
+    const actionIn  = r === 'CHECKIN';
+    const actionOut = r === 'CHECKOUT';
+    if (actionIn || actionOut) {
+      history.unshift({
+        name:   data.employee_name,
+        action: actionIn ? 'IN' : 'OUT',
+        time:   data.time || data.check_out_time || '',
+        color:  cfg.color,
+      });
+      if (history.length > 12) history.pop();
+      historyList.innerHTML = history.map(h =>
+        `<div class="history-item">
+          <div class="h-dot" style="background:${h.color}"></div>
+          <div class="h-name">${h.name}</div>
+          <span class="h-action ${h.action === 'IN' ? 'in' : 'out'}">${h.action}</span>
+          <div class="h-time">${h.time}</div>
+        </div>`
+      ).join('');
+    }
   }
 }
 
+// Init
 boot();
+setMode('checkin');
 </script>
 </body>
 </html>
