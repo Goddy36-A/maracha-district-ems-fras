@@ -2,30 +2,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — {{ miu_branding.SYSTEM_NAME }}</title>
-    <link rel="stylesheet" href="{% static 'css/miu-theme.css' %}">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In — {{ branding.INSTITUTION_SHORT_NAME }}</title>
+  <link rel="stylesheet" href="{% static 'css/theme.css' %}"/>
+  <style>
+    /* ── LOGIN PAGE — Government-grade, uniform with the rest of the system ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: stretch;
+    }
+
+    /* LEFT PANEL — HQ photo or rich dark overlay */
+    .login-hero {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 48px;
+      /* ─ Drop in the real HQ photo by setting --hq-photo ─────────────────
+         In settings.py add: DISTRICT_BRANDING["HQ_PHOTO_URL"] = "/static/district/hq.jpg"
+         Then update this url() value. Until then the gradient below is shown.
+         ─────────────────────────────────────────────────────────────────── */
+      background:
+        linear-gradient(
+          to top,
+          rgba(4, 10, 18, 0.92) 0%,
+          rgba(4, 10, 18, 0.55) 55%,
+          rgba(4, 10, 18, 0.30) 100%
+        ),
+        {% if branding.HQ_PHOTO_URL %}
+          url("{{ branding.HQ_PHOTO_URL }}") center center / cover no-repeat;
+        {% else %}
+          /* Architect-blue fallback — matches govt navy token */
+          linear-gradient(155deg,
+            #040a12 0%,
+            #071629 30%,
+            #0a2040 55%,
+            #071629 80%,
+            #040a12 100%
+          );
+        {% endif %}
+    }
+
+    /* Subtle grid lines give structure even without a photo */
+    .login-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(4px);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,.7);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 8px #4ade80;
+      animation: blink 2s ease infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .hero-title {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -.3px;
+    }
+    .hero-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,.5);
+      line-height: 1.6;
+      max-width: 380px;
+    }
+
+    .hero-divider {
+      width: 48px; height: 3px;
+      background: {{ branding.ACCENT_COLOR|default:"#c8992a" }};
+      border-radius: 2px;
+      margin: 16px 0;
+    }
+
+    /* RIGHT PANEL — login card */
+    .login-panel {
+      width: 420px;
+      flex-shrink: 0;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 40px;
+      position: relative;
+    }
+
+    .login-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(
+        to bottom,
+        {{ branding.PRIMARY_COLOR|default:"#1e4d8c" }},
+        {{ branding.ACCENT_COLOR|default:"#c8992a" }}
+      );
+    }
+
+    .panel-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .panel-logo img { height: 44px; }
+    .panel-logo-text .org { font-size: 13px; font-weight: 700; color: #111; line-height: 1.2; }
+    .panel-logo-text .sys { font-size: 11px; color: #666; margin-top: 2px; }
+
+    .panel-heading { font-size: 22px; font-weight: 800; color: #111; margin-bottom: 6px; }
+    .panel-sub     { font-size: 13px; color: #666; margin-bottom: 28px; }
+
+    .field-group { margin-bottom: 18px; }
+    .field-label { display: block; font-size: 12px; font-weight: 700; color: #444; letter-spacing: .3px; margin-bottom: 6px; }
+    .field-input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #dde1e7;
+      border-radius: 8px;
+      font-size: 14px; color: #111;
+      background: #f9fafb;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+    .field-input:focus { border-color: {{ branding.PRIMARY_COLOR|default:"#1e4d8c" }}; box-shadow: 0 0 0 3px rgba(30,77,140,.1); background: #fff; }
+
+    .error-msg {
+      background: #fff1f0; border: 1px solid #ffd4d0; border-radius: 8px;
+      padding: 10px 14px; font-size: 13px; color: #c0392b;
+      margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+    }
+
+    .btn-login {
+      width: 100%; padding: 12px;
+      background: {{ branding.PRIMARY_COLOR|default:"#1e4d8c" }};
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      margin-top: 6px;
+    }
+    .btn-login:hover  { opacity: .9; }
+    .btn-login:active { transform: scale(.99); }
+
+    .forgot-link {
+      display: block; text-align: center;
+      margin-top: 18px; font-size: 13px; color: #666;
+    }
+    .forgot-link a { color: {{ branding.PRIMARY_COLOR|default:"#1e4d8c" }}; font-weight: 600; }
+
+    .panel-footer {
+      margin-top: auto;
+      padding-top: 32px;
+      font-size: 11px;
+      color: #aaa;
+      border-top: 1px solid #eee;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* Django auto-generated field rendering */
+    input[name="username"], input[name="password"] {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #dde1e7; border-radius: 8px;
+      font-size: 14px; color: #111; background: #f9fafb;
+      transition: border-color .15s, box-shadow .15s; outline: none;
+      font-family: inherit;
+    }
+    input[name="username"]:focus,
+    input[name="password"]:focus {
+      border-color: {{ branding.PRIMARY_COLOR|default:"#1e4d8c" }};
+      box-shadow: 0 0 0 3px rgba(30,77,140,.1);
+      background: #fff;
+    }
+
+    /* Mobile: stack vertically */
+    @media (max-width: 768px) {
+      body           { flex-direction: column; }
+      .login-hero    { min-height: 220px; flex: none; padding: 28px 24px; }
+      .login-panel   { width: 100%; padding: 32px 24px; }
+      .login-panel::before { top: 0; bottom: auto; left: 0; right: 0; width: auto; height: 4px; }
+      .hero-title    { font-size: 20px; }
+    }
+  </style>
 </head>
 <body>
-<div class="login-page">
-    <div class="login-card">
-        <img src="{% static miu_branding.LOGO_STATIC_PATH %}" alt="{{ miu_branding.INSTITUTION_SHORT_NAME }} logo">
-        <h1>{{ miu_branding.INSTITUTION_NAME }}</h1>
-        <div class="system-name">{{ miu_branding.SYSTEM_NAME }}</div>
 
-        {% if form.errors %}
-            <ul class="messages"><li class="error">Invalid credentials, or your account may be locked.</li></ul>
-        {% endif %}
-
-        <form method="post">
-            {% csrf_token %}
-            {{ form.username }}
-            {{ form.password }}
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-        <p style="margin-top:1rem;"><a href="{% url 'accounts:password_reset' %}">Forgot Password?</a></p>
+  <!-- LEFT: HERO / HQ PHOTO PANEL -->
+  <div class="login-hero">
+    <div class="hero-content">
+      <div class="hero-badge">Secure System Access</div>
+      <div class="hero-title">
+        Maracha District<br/>Local Government
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-sub">
+        Employee Management System with Facial Recognition Attendance.<br/>
+        Authorised staff only.
+      </div>
     </div>
-</div>
+  </div>
+
+  <!-- RIGHT: FORM PANEL -->
+  <div class="login-panel">
+
+    <div class="panel-logo">
+      <img src="{% static branding.LOGO_STATIC_PATH %}" alt="{{ branding.INSTITUTION_SHORT_NAME }} logo"/>
+      <div class="panel-logo-text">
+        <div class="org">{{ branding.INSTITUTION_SHORT_NAME }}</div>
+        <div class="sys">{{ branding.SYSTEM_NAME }}</div>
+      </div>
+    </div>
+
+    <div class="panel-heading">Sign in</div>
+    <div class="panel-sub">Enter your staff credentials to continue</div>
+
+    {% if form.errors %}
+    <div class="error-msg">
+      <span>⚠</span> Invalid username or password. Please try again.
+    </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="field-group">
+        <label class="field-label" for="id_username">Username</label>
+        {{ form.username }}
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="id_password">Password</label>
+        {{ form.password }}
+      </div>
+      <button type="submit" class="btn-login">Sign In →</button>
+    </form>
+
+    <div class="forgot-link">
+      <a href="{% url 'accounts:password_reset' %}">Forgot your password?</a>
+    </div>
+
+    <div class="panel-footer">
+      &copy; {% now "Y" %} Maracha District Local Government.<br/>
+      Unauthorised access is prohibited and will be logged.
+    </div>
+
+  </div>
+
 </body>
 </html>

@@ -176,14 +176,17 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@maracha.go.ug")
 # one-place change (see apps/core/context_processors.py).
 # ---------------------------------------------------------------------------
 DISTRICT_BRANDING = {
-    "INSTITUTION_NAME": "Maracha District Local Government",
+    "INSTITUTION_NAME":       "Maracha District Local Government",
     "INSTITUTION_SHORT_NAME": "Maracha DLG",
-    "SYSTEM_NAME": "Employee Management System with Facial Recognition",
-    "LOGO_STATIC_PATH": "district/logo.svg",
-    "IS_OFFICIAL_LOGO": False,
-    "PRIMARY_COLOR": "hsl(213, 60%, 28%)",   # MIU green
-    "SECONDARY_COLOR": "hsl(213, 55%, 18%)", # dark green
-    "ACCENT_COLOR": "hsl(38, 78%, 48%)",     # MIU gold
+    "SYSTEM_NAME":            "Employee Management System with Facial Recognition",
+    "LOGO_STATIC_PATH":       "district/logo.svg",
+    "IS_OFFICIAL_LOGO":       False,
+    "PRIMARY_COLOR":          "hsl(213, 60%, 28%)",   # government navy
+    "SECONDARY_COLOR":        "hsl(213, 55%, 18%)",   # dark navy
+    "ACCENT_COLOR":           "hsl(38, 78%, 48%)",    # gold
+    # Set this to the static path of an actual Maracha HQ photo to use it
+    # as the login page background, e.g. "district/hq.jpg"
+    "HQ_PHOTO_URL":           "",
 }
 
 # ---------------------------------------------------------------------------
