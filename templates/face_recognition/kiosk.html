@@ -16,16 +16,55 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 .header-text p {font-size:11px;color:#8b949e;margin:0}
 .kiosk-clock{margin-left:auto;font-family:monospace;font-size:22px;font-weight:700;color:#e6edf3;letter-spacing:2px}
 
+/* ── BACK BUTTON ────────────────────────────────────────────────────── */
+.kiosk-back{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:8px;
+  background:rgba(255,255,255,.04);
+  color:#e6edf3;
+  font-size:13px;font-weight:600;
+  cursor:pointer;
+  flex-shrink:0;
+  transition:background .15s,border-color .15s,transform .15s;
+}
+.kiosk-back:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3)}
+.kiosk-back:active{transform:scale(.96)}
+.kiosk-back svg{width:16px;height:16px;flex-shrink:0}
+
 /* ── MODE BAR ───────────────────────────────────────────────────────── */
-.mode-bar{display:flex;align-items:center;justify-content:center;padding:8px 24px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;gap:0}
-.mode-btn{flex:1;max-width:220px;padding:10px 20px;font-size:14px;font-weight:700;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#8b949e;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
+/* Made sticky + higher-contrast so it never gets clipped or blends into the background */
+.mode-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:10px 24px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,.12);flex-shrink:0;gap:0}
+.mode-btn{flex:1;max-width:220px;padding:12px 20px;font-size:14px;font-weight:700;border:2px solid rgba(255,255,255,.16);background:rgba(255,255,255,.045);color:#c9d1d9;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;opacity:1;visibility:visible}
 .mode-btn:first-child{border-radius:10px 0 0 10px}
 .mode-btn:last-child {border-radius:0 10px 10px 0;border-left:none}
-.mode-btn.active-checkin {background:rgba(74,222,128,.12);border-color:#4ade80;color:#4ade80;box-shadow:0 0 20px rgba(74,222,128,.15)}
-.mode-btn.active-checkout{background:rgba(88,166,255,.12);border-color:#58a6ff;color:#58a6ff;box-shadow:0 0 20px rgba(88,166,255,.15)}
+.mode-btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.mode-btn.active-checkin {background:rgba(74,222,128,.16);border-color:#4ade80;color:#4ade80;box-shadow:0 0 20px rgba(74,222,128,.25)}
+.mode-btn.active-checkout{background:rgba(88,166,255,.16);border-color:#58a6ff;color:#58a6ff;box-shadow:0 0 20px rgba(88,166,255,.25)}
 .mode-label{display:flex;flex-direction:column;text-align:left;line-height:1.2}
 .mode-label b{font-size:14px}
 .mode-label small{font-size:10px;font-weight:400;opacity:.65;letter-spacing:.5px}
+
+/* ── PAGE SLIDE: RESULT BANNER ─────────────────────────────────────── */
+/* Slides down from the top of the camera panel the instant a scan is
+   accepted or rejected — impossible to miss, unlike the small centre overlay. */
+.result-banner{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  padding:22px 20px;
+  font-size:clamp(20px,3vw,32px);font-weight:800;letter-spacing:.3px;
+  transform:translateY(-110%);
+  transition:transform .38s cubic-bezier(.34,1.3,.4,1);
+  z-index:40;
+  text-align:center;
+  text-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+.result-banner.show{transform:translateY(0)}
+.result-banner.ok      {background:#4ade80;color:#052e13}
+.result-banner.ok-out  {background:#58a6ff;color:#04152b}
+.result-banner.err     {background:#f85149;color:#2b0402}
+.result-banner .rb-icon{font-size:1.3em;line-height:1}
 
 /* ── BODY ───────────────────────────────────────────────────────────── */
 .kiosk-body{flex:1;display:flex;overflow:hidden;min-height:0}
@@ -135,6 +174,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 <body>
 
 <div class="kiosk-header">
+  <button class="kiosk-back" id="kioskBackBtn" onclick="goBack()" title="Back to Dashboard">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <span>Back</span>
+  </button>
   <img src="{% static 'district/logo.svg' %}" alt="Maracha DLG"/>
   <div class="header-text">
     <h1>Maracha District Local Government</h1>
@@ -173,6 +216,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 
     <div class="cam-mode-badge mode-checkin" id="camBadge">● CHECK IN</div>
     <div class="cam-hint" id="camHint"></div>
+
+    <!-- ★ Big slide-down banner — the unmistakable ACCEPTED/REJECTED signal ★ -->
+    <div class="result-banner" id="resultBanner">
+      <span class="rb-icon" id="rbIcon"></span>
+      <span id="rbText"></span>
+    </div>
   </div>
 
   <!-- DRAG DIVIDER — grab and pull to resize panels -->
@@ -196,8 +245,25 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.js"></script>
 <script>
-const MODEL_URL  = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/model/';
-const VERIFY_URL = '{% url "face:api_verify" %}';
+const MODEL_URL     = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/model/';
+const VERIFY_URL    = '{% url "face:api_verify" %}';
+const DASHBOARD_URL = '{% url "dashboard:home" %}';
+
+// ── BACK BUTTON ──────────────────────────────────────────────────────────────
+// The kiosk is usually opened in its own tab (target="_blank"), so plain
+// history.back() can land on a blank tab with nothing to go back to.
+// Prefer the referring page when it's from this same site; otherwise send
+// the user to the dashboard, and close the tab if it was opened standalone.
+function goBack() {
+  const cameFromThisSite = document.referrer && document.referrer.indexOf(window.location.origin) === 0;
+  if (cameFromThisSite && window.history.length > 1) {
+    window.history.back();
+  } else if (cameFromThisSite) {
+    window.location.href = document.referrer;
+  } else {
+    window.location.href = DASHBOARD_URL;
+  }
+}
 
 // DOM refs
 const video     = document.getElementById('video');
@@ -214,6 +280,10 @@ const sTitle    = document.getElementById('sTitle');
 const sSub      = document.getElementById('sSub');
 const rCards    = document.getElementById('rCards');
 const histList  = document.getElementById('historyList');
+const resultBanner = document.getElementById('resultBanner');
+const rbIcon    = document.getElementById('rbIcon');
+const rbText    = document.getElementById('rbText');
+let bannerHideTimer = null;
 
 // ── STATE MACHINE ──────────────────────────────────────────────────────────
 // States: LOADING | READY | DETECTED | VERIFYING | RESULT
@@ -288,8 +358,9 @@ setInterval(() => {
 
 // ── MODE SWITCH ────────────────────────────────────────────────────────────
 function setMode(m) {
-  mode = m;
+  if (m === mode) return; // already on this mode — skip re-animating
   const isIn = m === 'checkin';
+  mode = m;
   document.getElementById('btnCheckin').className  = 'mode-btn' + (isIn  ? ' active-checkin'  : '');
   document.getElementById('btnCheckout').className = 'mode-btn' + (!isIn ? ' active-checkout' : '');
   camBadge.className   = `cam-mode-badge mode-${m}`;
@@ -427,6 +498,20 @@ function showResult(data) {
   // Ring colour
   scanRing.className = `scan-ring mode-${mode} ${cfg.ring}`;
 
+  // ── Slide-down banner — the clear, hard-to-miss ACCEPTED/REJECTED signal ──
+  const isAccepted = data.ok === true;
+  const bannerClass = !isAccepted ? 'err' : (r === 'CHECKOUT' ? 'ok-out' : 'ok');
+  rbIcon.textContent = isAccepted ? '✔' : '✖';
+  rbText.textContent = isAccepted
+    ? (r === 'CHECKOUT' ? 'CHECKED OUT' : 'CHECKED IN')
+    : 'REJECTED';
+  resultBanner.className = `result-banner ${bannerClass}`;
+  // Force reflow so re-triggering the same class still re-plays the slide
+  void resultBanner.offsetWidth;
+  resultBanner.classList.add('show');
+  if (bannerHideTimer) clearTimeout(bannerHideTimer);
+  bannerHideTimer = setTimeout(() => resultBanner.classList.remove('show'), cfg.hold - 250);
+
   // Side panel
   sIcon.textContent  = cfg.icon;
   sTitle.textContent = data.message || 'Unknown result';
@@ -481,6 +566,7 @@ function showResult(data) {
   resultTimer = setTimeout(() => {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    resultBanner.classList.remove('show'); // safety net in case bannerHideTimer was cleared
     setKioskState('READY');
     startLoop();           // resume scanning
   }, cfg.hold);
