@@ -9,103 +9,113 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;height:100vh;overflow:hidden;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 
-/* HEADER */
-.kiosk-header{display:flex;align-items:center;gap:14px;padding:0 24px;height:58px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-.kiosk-header img{height:36px}
-.header-text h1{font-size:15px;font-weight:700;margin:0}
-.header-text p{font-size:11px;color:#8b949e;margin:0}
-.kiosk-clock{margin-left:auto;font-family:monospace;font-size:24px;font-weight:700;color:#e6edf3;letter-spacing:2px}
+/* ── HEADER ─────────────────────────────────────────────────────────── */
+.kiosk-header{display:flex;align-items:center;gap:14px;padding:0 24px;height:56px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.kiosk-header img{height:34px}
+.header-text h1{font-size:14px;font-weight:700;margin:0}
+.header-text p {font-size:11px;color:#8b949e;margin:0}
+.kiosk-clock{margin-left:auto;font-family:monospace;font-size:22px;font-weight:700;color:#e6edf3;letter-spacing:2px}
 
-/* MODE SWITCHER — the main change */
-.mode-bar{display:flex;align-items:center;justify-content:center;gap:0;padding:10px 24px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-.mode-btn{
-  flex:1;max-width:220px;padding:11px 20px;font-size:15px;font-weight:700;
-  border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
-  color:#8b949e;cursor:pointer;transition:all .2s;letter-spacing:.3px;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-}
+/* ── MODE BAR ───────────────────────────────────────────────────────── */
+.mode-bar{display:flex;align-items:center;justify-content:center;padding:8px 24px;background:#0d1117;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;gap:0}
+.mode-btn{flex:1;max-width:220px;padding:10px 20px;font-size:14px;font-weight:700;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#8b949e;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
 .mode-btn:first-child{border-radius:10px 0 0 10px}
 .mode-btn:last-child {border-radius:0 10px 10px 0;border-left:none}
-.mode-btn.active-checkin {
-  background:rgba(74,222,128,.12);border-color:#4ade80;color:#4ade80;
-  box-shadow:0 0 20px rgba(74,222,128,.15);
-}
-.mode-btn.active-checkout{
-  background:rgba(88,166,255,.12);border-color:#58a6ff;color:#58a6ff;
-  box-shadow:0 0 20px rgba(88,166,255,.15);
-}
-.mode-icon{font-size:20px}
+.mode-btn.active-checkin {background:rgba(74,222,128,.12);border-color:#4ade80;color:#4ade80;box-shadow:0 0 20px rgba(74,222,128,.15)}
+.mode-btn.active-checkout{background:rgba(88,166,255,.12);border-color:#58a6ff;color:#58a6ff;box-shadow:0 0 20px rgba(88,166,255,.15)}
 .mode-label{display:flex;flex-direction:column;text-align:left;line-height:1.2}
-.mode-label span:first-child{font-size:15px;font-weight:700}
-.mode-label span:last-child{font-size:10px;font-weight:400;opacity:.7;letter-spacing:.5px}
+.mode-label b{font-size:14px}
+.mode-label small{font-size:10px;font-weight:400;opacity:.65;letter-spacing:.5px}
 
-/* BODY */
+/* ── BODY ───────────────────────────────────────────────────────────── */
 .kiosk-body{flex:1;display:grid;grid-template-columns:1fr 340px;overflow:hidden}
 
-/* CAMERA */
-.cam-panel{position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+/* ── CAMERA PANEL ───────────────────────────────────────────────────── */
+.cam-panel{position:relative;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center}
 #video {width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 #canvas{position:absolute;top:0;left:0;width:100%;height:100%;transform:scaleX(-1);pointer-events:none}
 
-.scan-ring{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:230px;height:230px;border-radius:50%;
-  border:3px solid rgba(255,255,255,.15);pointer-events:none;
-  transition:border-color .3s,box-shadow .3s;
-}
-.scan-ring.mode-checkin {border-color:rgba(74,222,128,.35)}
-.scan-ring.mode-checkout{border-color:rgba(88,166,255,.35)}
-.scan-ring.detecting.mode-checkin {border-color:#4ade80;box-shadow:0 0 30px rgba(74,222,128,.35);animation:pulseG 1.2s ease infinite}
-.scan-ring.detecting.mode-checkout{border-color:#58a6ff;box-shadow:0 0 30px rgba(88,166,255,.35);animation:pulseB 1.2s ease infinite}
-.scan-ring.result-ok  {border-color:#4ade80;box-shadow:0 0 50px rgba(74,222,128,.5)}
-.scan-ring.result-ok.mode-checkout{border-color:#58a6ff;box-shadow:0 0 50px rgba(88,166,255,.5)}
-.scan-ring.result-err {border-color:#f85149;box-shadow:0 0 30px rgba(248,81,73,.35)}
-@keyframes pulseG{0%,100%{box-shadow:0 0 20px rgba(74,222,128,.25)}50%{box-shadow:0 0 40px rgba(74,222,128,.5)}}
-@keyframes pulseB{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.25)}50%{box-shadow:0 0 40px rgba(88,166,255,.5)}}
-
-/* Mode watermark on camera */
-.cam-mode-badge{
-  position:absolute;top:16px;left:16px;
-  padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;
-  backdrop-filter:blur(6px);
-}
+/* Mode badge top-left */
+.cam-mode-badge{position:absolute;top:14px;left:14px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;backdrop-filter:blur(6px);z-index:10}
 .cam-mode-badge.mode-checkin {background:rgba(74,222,128,.2);color:#4ade80;border:1px solid rgba(74,222,128,.4)}
 .cam-mode-badge.mode-checkout{background:rgba(88,166,255,.2);color:#58a6ff;border:1px solid rgba(88,166,255,.4)}
 
-.cam-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);padding:8px 18px;border-radius:20px;font-size:12px;color:#8b949e;white-space:nowrap;pointer-events:none}
-.loading-msg{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);padding:6px 14px;border-radius:6px;font-size:11px;color:#8b949e;font-family:monospace}
+/* ── SCAN RING ──────────────────────────────────────────────────────── */
+.scan-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);width:220px;height:220px;border-radius:50%;border:3px solid rgba(255,255,255,.12);pointer-events:none;transition:border-color .25s,box-shadow .25s}
+/* Per-mode idle colour */
+.scan-ring.mode-checkin {border-color:rgba(74,222,128,.3)}
+.scan-ring.mode-checkout{border-color:rgba(88,166,255,.3)}
+/* Face visible */
+.scan-ring.s-detected.mode-checkin {border-color:#4ade80;box-shadow:0 0 28px rgba(74,222,128,.4);animation:pgG 1s ease infinite}
+.scan-ring.s-detected.mode-checkout{border-color:#58a6ff;box-shadow:0 0 28px rgba(88,166,255,.4);animation:pgB 1s ease infinite}
+/* Verifying — white spin */
+.scan-ring.s-verifying{border-color:rgba(255,255,255,.6)!important;box-shadow:none!important;animation:spinRing .8s linear infinite!important}
+/* Result */
+.scan-ring.s-ok {border-color:#4ade80;box-shadow:0 0 44px rgba(74,222,128,.55);animation:none}
+.scan-ring.s-ok.mode-checkout{border-color:#58a6ff;box-shadow:0 0 44px rgba(88,166,255,.55)}
+.scan-ring.s-err{border-color:#f85149;box-shadow:0 0 28px rgba(248,81,73,.4);animation:none}
 
-/* RESULT PANEL */
+@keyframes pgG{0%,100%{box-shadow:0 0 20px rgba(74,222,128,.3)}50%{box-shadow:0 0 40px rgba(74,222,128,.55)}}
+@keyframes pgB{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.3)}50%{box-shadow:0 0 40px rgba(88,166,255,.55)}}
+@keyframes spinRing{to{transform:translate(-50%,-58%) rotate(360deg)}}
+
+/* ── CENTRE STATUS OVERLAY (the main new element) ───────────────────── */
+/* Sits inside the camera panel, centred, always on top               */
+.cam-overlay{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-58%);   /* same offset as scan-ring */
+  width:220px;height:220px;
+  border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;
+  pointer-events:none;
+  z-index:20;
+  text-align:center;
+  padding:20px;
+}
+.ov-icon{font-size:42px;line-height:1}
+.ov-title{font-size:15px;font-weight:800;letter-spacing:-.2px;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.ov-sub  {font-size:11px;color:rgba(255,255,255,.6);text-shadow:0 1px 3px rgba(0,0,0,.9)}
+
+/* Loading spinner inside overlay */
+.ov-spinner{
+  width:36px;height:36px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.15);
+  border-top-color:#fff;
+  animation:spinS .75s linear infinite;
+}
+@keyframes spinS{to{transform:rotate(360deg)}}
+
+/* Bottom hint pill */
+.cam-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);backdrop-filter:blur(4px);padding:7px 18px;border-radius:20px;font-size:12px;color:rgba(255,255,255,.6);white-space:nowrap;pointer-events:none;transition:opacity .3s}
+
+/* ── RIGHT PANEL ────────────────────────────────────────────────────── */
 .result-panel{background:#0d1117;border-left:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;overflow-y:auto}
-
-.status-box{padding:22px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
-.status-label{font-size:9px;letter-spacing:1.2px;color:#484f58;font-family:monospace;margin-bottom:10px;text-transform:uppercase}
-.status-icon {font-size:52px;text-align:center;margin-bottom:10px;line-height:1}
-.status-title{font-size:17px;font-weight:700;text-align:center;line-height:1.35;min-height:48px}
-.status-sub  {font-size:12px;color:#8b949e;text-align:center;margin-top:6px;min-height:18px}
-
-.result-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
-.result-card {background:#161b22;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px 12px}
-.rc-key{font-size:9px;color:#484f58;font-family:monospace;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
-.rc-val{font-size:14px;font-weight:600}
-
-/* HISTORY */
-.history-box{padding:16px 20px;flex:1}
-.history-title{font-size:10px;font-weight:700;letter-spacing:.8px;color:#484f58;text-transform:uppercase;font-family:monospace;margin-bottom:10px}
-.history-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;margin-bottom:5px;font-size:12px;background:#161b22;border:1px solid rgba(255,255,255,.05)}
-.h-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.h-name{font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.h-action{font-size:10px;font-family:monospace;padding:2px 6px;border-radius:4px;flex-shrink:0}
-.h-action.in {background:rgba(74,222,128,.1);color:#4ade80}
-.h-action.out{background:rgba(88,166,255,.1);color:#58a6ff}
-.h-time{color:#484f58;font-family:monospace;font-size:11px;flex-shrink:0}
+.status-box{padding:20px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.s-label{font-size:9px;letter-spacing:1.2px;color:#484f58;font-family:monospace;text-transform:uppercase;margin-bottom:10px}
+.s-icon {font-size:48px;text-align:center;line-height:1;margin-bottom:8px}
+.s-title{font-size:16px;font-weight:700;text-align:center;line-height:1.4;min-height:44px}
+.s-sub  {font-size:12px;color:#8b949e;text-align:center;margin-top:5px;min-height:16px}
+.r-cards{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px}
+.r-card {background:#161b22;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 11px}
+.r-key  {font-size:9px;color:#484f58;font-family:monospace;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px}
+.r-val  {font-size:13px;font-weight:600}
+.history-box{padding:14px 18px;flex:1}
+.h-title{font-size:10px;font-weight:700;letter-spacing:.8px;color:#484f58;text-transform:uppercase;font-family:monospace;margin-bottom:9px}
+.h-item {display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;margin-bottom:4px;font-size:12px;background:#161b22;border:1px solid rgba(255,255,255,.05)}
+.h-dot  {width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.h-name {font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.h-badge{font-size:10px;font-family:monospace;padding:2px 6px;border-radius:4px;flex-shrink:0}
+.h-badge.in {background:rgba(74,222,128,.1);color:#4ade80}
+.h-badge.out{background:rgba(88,166,255,.1);color:#58a6ff}
+.h-time {color:#484f58;font-family:monospace;font-size:11px;flex-shrink:0}
 
 @media(max-width:768px){.kiosk-body{grid-template-columns:1fr}.result-panel{display:none}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="kiosk-header">
   <img src="{% static 'district/logo.svg' %}" alt="Maracha DLG"/>
   <div class="header-text">
@@ -115,48 +125,49 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
   <div class="kiosk-clock" id="kioskClock">--:--:--</div>
 </div>
 
-<!-- MODE SWITCHER -->
 <div class="mode-bar">
   <button class="mode-btn active-checkin" id="btnCheckin" onclick="setMode('checkin')">
-    <span class="mode-icon">🟢</span>
-    <span class="mode-label">
-      <span>Check In</span>
-      <span>ARRIVING</span>
-    </span>
+    <span style="font-size:18px">🟢</span>
+    <span class="mode-label"><b>Check In</b><small>ARRIVING</small></span>
   </button>
   <button class="mode-btn" id="btnCheckout" onclick="setMode('checkout')">
-    <span class="mode-icon">🔵</span>
-    <span class="mode-label">
-      <span>Check Out</span>
-      <span>LEAVING</span>
-    </span>
+    <span style="font-size:18px">🔵</span>
+    <span class="mode-label"><b>Check Out</b><small>LEAVING</small></span>
   </button>
 </div>
 
-<!-- BODY -->
 <div class="kiosk-body">
 
   <!-- CAMERA -->
-  <div class="cam-panel" id="camPanel">
+  <div class="cam-panel">
     <video id="video" autoplay muted playsinline></video>
     <canvas id="canvas"></canvas>
+
+    <!-- Scan ring (always present) -->
     <div class="scan-ring mode-checkin" id="scanRing"></div>
-    <div class="cam-mode-badge mode-checkin" id="camModeBadge">● CHECK IN</div>
-    <div class="cam-hint" id="camHint">Position your face inside the ring</div>
-    <div class="loading-msg" id="loadingMsg">Loading face recognition models…</div>
+
+    <!-- ★ Centre overlay — the main status display ★ -->
+    <div class="cam-overlay" id="camOverlay">
+      <div class="ov-spinner" id="ovSpinner"></div>
+      <div class="ov-title" id="ovTitle">Loading models…</div>
+      <div class="ov-sub"   id="ovSub">Please wait</div>
+    </div>
+
+    <div class="cam-mode-badge mode-checkin" id="camBadge">● CHECK IN</div>
+    <div class="cam-hint" id="camHint"></div>
   </div>
 
   <!-- RESULT PANEL -->
   <div class="result-panel">
     <div class="status-box">
-      <div class="status-label">Last Result</div>
-      <div class="status-icon" id="statusIcon">🔍</div>
-      <div class="status-title" id="statusTitle" style="color:#8b949e">Waiting for face…</div>
-      <div class="status-sub"   id="statusSub">Stand in front of the camera</div>
-      <div class="result-cards" id="resultCards" style="display:none"></div>
+      <div class="s-label">Last Result</div>
+      <div class="s-icon"  id="sIcon">⏳</div>
+      <div class="s-title" id="sTitle" style="color:#484f58">Waiting…</div>
+      <div class="s-sub"   id="sSub">No scan yet</div>
+      <div class="r-cards" id="rCards" style="display:none"></div>
     </div>
     <div class="history-box">
-      <div class="history-title">Today's Activity</div>
+      <div class="h-title">Today's Activity</div>
       <div id="historyList"></div>
     </div>
   </div>
@@ -167,23 +178,86 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 const MODEL_URL  = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/model/';
 const VERIFY_URL = '{% url "face:api_verify" %}';
 
-const video       = document.getElementById('video');
-const canvas      = document.getElementById('canvas');
-const scanRing    = document.getElementById('scanRing');
-const camBadge    = document.getElementById('camModeBadge');
-const camHint     = document.getElementById('camHint');
-const loadingMsg  = document.getElementById('loadingMsg');
-const statusIcon  = document.getElementById('statusIcon');
-const statusTitle = document.getElementById('statusTitle');
-const statusSub   = document.getElementById('statusSub');
-const resultCards = document.getElementById('resultCards');
-const historyList = document.getElementById('historyList');
+// DOM refs
+const video     = document.getElementById('video');
+const canvas    = document.getElementById('canvas');
+const scanRing  = document.getElementById('scanRing');
+const camBadge  = document.getElementById('camBadge');
+const camHint   = document.getElementById('camHint');
+const overlay   = document.getElementById('camOverlay');
+const ovSpinner = document.getElementById('ovSpinner');
+const ovTitle   = document.getElementById('ovTitle');
+const ovSub     = document.getElementById('ovSub');
+const sIcon     = document.getElementById('sIcon');
+const sTitle    = document.getElementById('sTitle');
+const sSub      = document.getElementById('sSub');
+const rCards    = document.getElementById('rCards');
+const histList  = document.getElementById('historyList');
 
-let mode         = 'checkin';
-let modelsLoaded = false;
-let scanning     = false;
-let cooldown     = false;
-const history    = [];
+// ── STATE MACHINE ──────────────────────────────────────────────────────────
+// States: LOADING | READY | DETECTED | VERIFYING | RESULT
+let STATE    = 'LOADING';
+let mode     = 'checkin';
+let rafId    = null;       // requestAnimationFrame handle — we cancel this
+let resultTimer = null;    // auto-reset timer after showing a result
+const log    = [];
+
+const OPTS   = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 });
+
+function setKioskState(s, extra) {
+  STATE = s;
+  const isIn = mode === 'checkin';
+  const ringBase = `scan-ring mode-${mode}`;
+
+  switch (s) {
+    case 'LOADING':
+      scanRing.className = ringBase;
+      setOverlay('show', extra?.spinner ?? true, extra?.title ?? 'Loading…', extra?.sub ?? '');
+      camHint.textContent = '';
+      break;
+
+    case 'READY':
+      scanRing.className = ringBase;
+      // Overlay hidden — nothing in the ring, just the bare ring visible
+      setOverlay('hide');
+      camHint.textContent = 'Position your face inside the ring';
+      break;
+
+    case 'DETECTED':
+      scanRing.className = `${ringBase} s-detected`;
+      setOverlay('show', false, '😐', 'Hold still…');
+      camHint.textContent = 'Face detected';
+      break;
+
+    case 'VERIFYING':
+      scanRing.className = `${ringBase} s-verifying`;
+      setOverlay('show', true, 'Verifying…', 'Please wait');
+      camHint.textContent = 'Checking identity…';
+      break;
+
+    case 'RESULT':
+      // ring class set by showResult
+      setOverlay('hide');
+      camHint.textContent = extra?.hint ?? '';
+      break;
+  }
+}
+
+function setOverlay(visibility, spinner, title, sub) {
+  if (visibility === 'hide') {
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
+    return;
+  }
+  overlay.style.opacity = '1';
+  overlay.style.pointerEvents = 'none';
+  ovSpinner.style.display = spinner ? 'block' : 'none';
+  ovTitle.textContent = title ?? '';
+  ovSub.textContent   = sub   ?? '';
+  // Large emoji icons: if title is a single emoji, make it big
+  const isEmoji = /^\p{Emoji}/u.test(title ?? '');
+  ovTitle.style.fontSize = isEmoji ? '52px' : '15px';
+}
 
 // ── CLOCK ──────────────────────────────────────────────────────────────────
 setInterval(() => {
@@ -191,44 +265,38 @@ setInterval(() => {
     new Date().toLocaleTimeString('en-UG', {hour12: false});
 }, 1000);
 
-// ── MODE SWITCHER ──────────────────────────────────────────────────────────
+// ── MODE SWITCH ────────────────────────────────────────────────────────────
 function setMode(m) {
   mode = m;
   const isIn = m === 'checkin';
-
-  // Buttons
   document.getElementById('btnCheckin').className  = 'mode-btn' + (isIn  ? ' active-checkin'  : '');
   document.getElementById('btnCheckout').className = 'mode-btn' + (!isIn ? ' active-checkout' : '');
-
-  // Camera ring + badge
-  scanRing.className = 'scan-ring mode-' + m;
-  camBadge.className = 'cam-mode-badge mode-' + m;
+  camBadge.className   = `cam-mode-badge mode-${m}`;
   camBadge.textContent = isIn ? '● CHECK IN' : '● CHECK OUT';
-
-  // Reset result panel to neutral
-  statusIcon.textContent  = isIn ? '🟢' : '🔵';
-  statusTitle.textContent = isIn ? 'Ready to check in' : 'Ready to check out';
-  statusTitle.style.color = isIn ? '#4ade80' : '#58a6ff';
-  statusSub.textContent   = 'Stand in front of the camera';
-  resultCards.style.display = 'none';
+  // Update ring class for current state but don't change state
+  const cur = STATE;
+  if (cur === 'READY') setKioskState('READY');
+  // Reset side panel
+  sIcon.textContent   = isIn ? '🟢' : '🔵';
+  sTitle.textContent  = isIn ? 'Ready to check in' : 'Ready to check out';
+  sTitle.style.color  = isIn ? '#4ade80' : '#58a6ff';
+  sSub.textContent    = 'Stand in front of the camera';
+  rCards.style.display = 'none';
 }
 
-// ── MODEL + CAMERA BOOT ────────────────────────────────────────────────────
+// ── BOOT ───────────────────────────────────────────────────────────────────
 async function boot() {
-  try {
-    loadingMsg.textContent = 'Loading recognition model (1/3)…';
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-    loadingMsg.textContent = 'Loading landmark model (2/3)…';
-    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-    loadingMsg.textContent = 'Loading embedding model (3/3)…';
-    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-    modelsLoaded = true;
-    loadingMsg.textContent = 'Starting camera…';
-    await startCamera();
-  } catch(e) {
-    loadingMsg.textContent = 'Error: ' + e.message;
-    loadingMsg.style.color = '#f85149';
+  const steps = [
+    ['Loading detector (1/3)…', () => faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)],
+    ['Loading landmarks (2/3)…', () => faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)],
+    ['Loading recogniser (3/3)…', () => faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)],
+  ];
+  for (const [label, fn] of steps) {
+    setKioskState('LOADING', { spinner: true, title: label, sub: 'Please wait' });
+    await fn();
   }
+  setKioskState('LOADING', { spinner: true, title: 'Starting camera…', sub: '' });
+  await startCamera();
 }
 
 async function startCamera() {
@@ -240,53 +308,70 @@ async function startCamera() {
     video.addEventListener('playing', () => {
       canvas.width  = video.videoWidth;
       canvas.height = video.videoHeight;
-      loadingMsg.style.display = 'none';
-      scanLoop();
-    });
+      setKioskState('READY');
+      startLoop();
+    }, { once: true });
   } catch(e) {
-    loadingMsg.textContent = 'Camera error: ' + e.message;
-    loadingMsg.style.color = '#f85149';
+    setKioskState('LOADING', { spinner: false, title: '🚫', sub: 'Camera error: ' + e.message });
   }
 }
 
-// ── SCAN LOOP ──────────────────────────────────────────────────────────────
-const OPTS = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 });
+// ── SCAN LOOP — only runs in READY and DETECTED states ────────────────────
+function startLoop() {
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(scanLoop);
+}
+
+function stopLoop() {
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+}
 
 async function scanLoop() {
-  if (!modelsLoaded || cooldown) { requestAnimationFrame(scanLoop); return; }
+  // Only continue if we're in a scannable state
+  if (STATE !== 'READY' && STATE !== 'DETECTED') {
+    rafId = null;
+    return;
+  }
 
-  const result = await faceapi.detectSingleFace(video, OPTS)
-    .withFaceLandmarks().withFaceDescriptor();
+  const detection = await faceapi
+    .detectSingleFace(video, OPTS)
+    .withFaceLandmarks()
+    .withFaceDescriptor();
 
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (result) {
-    scanRing.classList.add('detecting');
-    camHint.textContent = 'Face detected — hold still…';
-
+  if (detection) {
+    // Draw landmarks
     const dims    = faceapi.matchDimensions(canvas, video, true);
-    const resized = faceapi.resizeResults(result, dims);
+    const resized = faceapi.resizeResults(detection, dims);
     faceapi.draw.drawFaceLandmarks(canvas, resized, {
       drawLines: true,
-      color: mode === 'checkin' ? 'rgba(74,222,128,0.4)' : 'rgba(88,166,255,0.4)',
+      color: mode === 'checkin' ? 'rgba(74,222,128,0.45)' : 'rgba(88,166,255,0.45)',
     });
 
-    if (!scanning) {
-      scanning = true;
-      await verifyFace(Array.from(result.descriptor));
-      scanning = false;
+    if (STATE === 'READY') {
+      // Transition to DETECTED then immediately VERIFYING
+      setKioskState('DETECTED');
+      // Brief pause so user sees "detected" state
+      rafId = null;
+      setTimeout(() => verify(Array.from(detection.descriptor)), 400);
+      return;   // don't call requestAnimationFrame — loop is paused
     }
+    // If STATE === 'DETECTED', we're already waiting for the 400ms timeout
   } else {
-    scanRing.classList.remove('detecting', 'result-ok', 'result-err');
-    camHint.textContent = 'Position your face inside the ring';
+    // No face — ensure we're in READY
+    if (STATE === 'DETECTED') setKioskState('READY');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  requestAnimationFrame(scanLoop);
+  rafId = requestAnimationFrame(scanLoop);
 }
 
-// ── API CALL ───────────────────────────────────────────────────────────────
-async function verifyFace(descriptor) {
+// ── VERIFY ─────────────────────────────────────────────────────────────────
+async function verify(descriptor) {
+  setKioskState('VERIFYING');
+
   try {
     const res  = await fetch(VERIFY_URL, {
       method:  'POST',
@@ -295,90 +380,92 @@ async function verifyFace(descriptor) {
     });
     const data = await res.json();
     showResult(data);
-    cooldown = true;
-    setTimeout(() => { cooldown = false; }, data.ok ? 5000 : 3000);
   } catch(e) {
     showResult({ ok: false, result: 'ERROR', message: 'Connection error. Please try again.' });
-    cooldown = true;
-    setTimeout(() => { cooldown = false; }, 3000);
   }
 }
 
-// ── RENDER RESULT ──────────────────────────────────────────────────────────
+// ── SHOW RESULT ────────────────────────────────────────────────────────────
+const RESULT_CFG = {
+  CHECKIN:   { icon: '✅', color: '#4ade80', ring: 's-ok',  hold: 5000, hint: 'Thank you! Next person please.' },
+  CHECKOUT:  { icon: '👋', color: '#58a6ff', ring: 's-ok',  hold: 5000, hint: 'Thank you! Next person please.' },
+  NO_MATCH:  { icon: '❌', color: '#f85149', ring: 's-err', hold: 4000, hint: 'Not recognised — please try again.' },
+  NO_CHECKIN:{ icon: '⚠️', color: '#e3b341', ring: 's-err', hold: 4000, hint: 'You must check in first.' },
+  DUPLICATE: { icon: '⚠️', color: '#e3b341', ring: 's-err', hold: 4000, hint: 'Already recorded today.' },
+  ERROR:     { icon: '🔴', color: '#f85149', ring: 's-err', hold: 3000, hint: 'Error — please try again.' },
+};
+
 function showResult(data) {
-  const r = data.result || (data.ok ? 'OK' : 'FAIL');
+  const r   = data.result || (data.ok ? 'CHECKIN' : 'NO_MATCH');
+  const cfg = RESULT_CFG[r] || RESULT_CFG.ERROR;
 
-  const cfg = {
-    CHECKIN:   { icon:'✅', color:'#4ade80', ring:'result-ok'  },
-    CHECKOUT:  { icon:'👋', color:'#58a6ff', ring:'result-ok'  },
-    NO_MATCH:  { icon:'❌', color:'#f85149', ring:'result-err' },
-    NO_CHECKIN:{ icon:'⚠️', color:'#e3b341', ring:'result-err' },
-    DUPLICATE: { icon:'⚠️', color:'#e3b341', ring:'result-err' },
-    ERROR:     { icon:'🔴', color:'#f85149', ring:'result-err' },
-  }[r] || { icon:'❓', color:'#8b949e', ring:'' };
+  // Stop scan loop — we're in RESULT state
+  stopLoop();
+  setKioskState('RESULT', { hint: cfg.hint });
 
-  scanRing.classList.remove('result-ok', 'result-err');
-  if (cfg.ring) scanRing.classList.add(cfg.ring);
+  // Ring colour
+  scanRing.className = `scan-ring mode-${mode} ${cfg.ring}`;
 
-  statusIcon.textContent  = cfg.icon;
-  statusTitle.style.color = cfg.color;
-  statusTitle.textContent = data.message || 'Unknown result';
-  statusSub.textContent   = data.ok
-    ? (data.distance != null ? `Confidence: ${Math.round((1 - data.distance) * 100)}%` : '')
+  // Side panel
+  sIcon.textContent  = cfg.icon;
+  sTitle.textContent = data.message || 'Unknown result';
+  sTitle.style.color = cfg.color;
+  sSub.textContent   = data.ok && data.distance != null
+    ? `Confidence: ${Math.round((1 - data.distance) * 100)}%`
     : '';
 
-  // Detail cards for successful results
+  // Detail cards
   if (data.ok) {
-    resultCards.style.display = 'grid';
     const cards = [];
-
-    if (data.employee_id)   cards.push(['Employee ID', data.employee_id]);
-    if (data.department)    cards.push(['Department',  data.department]);
-
-    if (r === 'CHECKIN') {
-      cards.push(['Checked In',  data.time || '—']);
-      cards.push(['Status',      data.status || 'PRESENT']);
+    if (data.employee_id) cards.push(['Employee ID', data.employee_id]);
+    if (data.department)  cards.push(['Department',  data.department]);
+    if (r === 'CHECKIN')  {
+      cards.push(['Checked In', data.time || '—']);
+      cards.push(['Status',     data.status || 'PRESENT']);
     }
     if (r === 'CHECKOUT') {
       cards.push(['Checked In',  data.check_in_time  || '—']);
       cards.push(['Checked Out', data.check_out_time || '—']);
-      cards.push(['Hours Worked',data.hours_worked ? data.hours_worked + 'h' : '—']);
+      cards.push(['Hours',       data.hours_worked   ? data.hours_worked + 'h' : '—']);
     }
-
-    resultCards.innerHTML = cards.map(([k,v]) =>
-      `<div class="result-card">
-        <div class="rc-key">${k}</div>
-        <div class="rc-val" style="color:${cfg.color}">${v}</div>
-      </div>`).join('');
+    rCards.style.display  = 'grid';
+    rCards.innerHTML = cards.map(([k,v]) =>
+      `<div class="r-card"><div class="r-key">${k}</div><div class="r-val" style="color:${cfg.color}">${v}</div></div>`
+    ).join('');
   } else {
-    resultCards.style.display = 'none';
+    rCards.style.display = 'none';
   }
 
-  // Add to today's history log
-  if (data.employee_name) {
-    const actionIn  = r === 'CHECKIN';
-    const actionOut = r === 'CHECKOUT';
-    if (actionIn || actionOut) {
-      history.unshift({
-        name:   data.employee_name,
-        action: actionIn ? 'IN' : 'OUT',
-        time:   data.time || data.check_out_time || '',
-        color:  cfg.color,
-      });
-      if (history.length > 12) history.pop();
-      historyList.innerHTML = history.map(h =>
-        `<div class="history-item">
-          <div class="h-dot" style="background:${h.color}"></div>
-          <div class="h-name">${h.name}</div>
-          <span class="h-action ${h.action === 'IN' ? 'in' : 'out'}">${h.action}</span>
-          <div class="h-time">${h.time}</div>
-        </div>`
-      ).join('');
-    }
+  // History log (successful check-ins / check-outs only)
+  if (data.ok && data.employee_name) {
+    log.unshift({
+      name:   data.employee_name,
+      action: r === 'CHECKIN' ? 'IN' : 'OUT',
+      time:   data.time || data.check_out_time || '',
+      color:  cfg.color,
+    });
+    if (log.length > 12) log.pop();
+    histList.innerHTML = log.map(h =>
+      `<div class="h-item">
+        <div class="h-dot" style="background:${h.color}"></div>
+        <div class="h-name">${h.name}</div>
+        <span class="h-badge ${h.action === 'IN' ? 'in' : 'out'}">${h.action}</span>
+        <div class="h-time">${h.time}</div>
+      </div>`
+    ).join('');
   }
+
+  // Auto-reset back to READY after hold duration
+  if (resultTimer) clearTimeout(resultTimer);
+  resultTimer = setTimeout(() => {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setKioskState('READY');
+    startLoop();           // resume scanning
+  }, cfg.hold);
 }
 
-// Init
+// ── START ──────────────────────────────────────────────────────────────────
 boot();
 setMode('checkin');
 </script>
