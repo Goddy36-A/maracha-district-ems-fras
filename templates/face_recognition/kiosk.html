@@ -28,12 +28,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 .mode-label small{font-size:10px;font-weight:400;opacity:.65;letter-spacing:.5px}
 
 /* ── BODY ───────────────────────────────────────────────────────────── */
-.kiosk-body{flex:1;display:grid;grid-template-columns:1fr 340px;overflow:hidden}
+.kiosk-body{flex:1;display:flex;overflow:hidden;min-height:0}
 
 /* ── CAMERA PANEL ───────────────────────────────────────────────────── */
-.cam-panel{position:relative;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.cam-panel{position:relative;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;flex:1;min-width:0}
 #video {width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 #canvas{position:absolute;top:0;left:0;width:100%;height:100%;transform:scaleX(-1);pointer-events:none}
+
+/* ── DRAG DIVIDER ───────────────────────────────────────────────────── */
+.divider{
+  width:8px;flex-shrink:0;cursor:col-resize;
+  background:rgba(255,255,255,.04);
+  border-left:1px solid rgba(255,255,255,.07);
+  border-right:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+  user-select:none;
+  position:relative;z-index:5;
+}
+.divider:hover,.divider.dragging{background:rgba(255,255,255,.14)}
+.divider::after{content:'⋮';color:rgba(255,255,255,.25);font-size:16px;pointer-events:none;letter-spacing:-2px}
 
 /* Mode badge top-left */
 .cam-mode-badge{position:absolute;top:14px;left:14px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;backdrop-filter:blur(6px);z-index:10}
@@ -41,7 +55,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 .cam-mode-badge.mode-checkout{background:rgba(88,166,255,.2);color:#58a6ff;border:1px solid rgba(88,166,255,.4)}
 
 /* ── SCAN RING ──────────────────────────────────────────────────────── */
-.scan-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);width:220px;height:220px;border-radius:50%;border:3px solid rgba(255,255,255,.12);pointer-events:none;transition:border-color .25s,box-shadow .25s}
+.scan-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:220px;height:220px;border-radius:50%;border:3px solid rgba(255,255,255,.12);pointer-events:none;transition:border-color .25s,box-shadow .25s}
 /* Per-mode idle colour */
 .scan-ring.mode-checkin {border-color:rgba(74,222,128,.3)}
 .scan-ring.mode-checkout{border-color:rgba(88,166,255,.3)}
@@ -57,14 +71,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 
 @keyframes pgG{0%,100%{box-shadow:0 0 20px rgba(74,222,128,.3)}50%{box-shadow:0 0 40px rgba(74,222,128,.55)}}
 @keyframes pgB{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.3)}50%{box-shadow:0 0 40px rgba(88,166,255,.55)}}
-@keyframes spinRing{to{transform:translate(-50%,-58%) rotate(360deg)}}
+@keyframes spinRing{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
 /* ── CENTRE STATUS OVERLAY (the main new element) ───────────────────── */
 /* Sits inside the camera panel, centred, always on top               */
 .cam-overlay{
   position:absolute;
   top:50%;left:50%;
-  transform:translate(-50%,-58%);   /* same offset as scan-ring */
+  transform:translate(-50%,-50%);
   width:220px;height:220px;
   border-radius:50%;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -91,7 +105,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 .cam-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);backdrop-filter:blur(4px);padding:7px 18px;border-radius:20px;font-size:12px;color:rgba(255,255,255,.6);white-space:nowrap;pointer-events:none;transition:opacity .3s}
 
 /* ── RIGHT PANEL ────────────────────────────────────────────────────── */
-.result-panel{background:#0d1117;border-left:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;overflow-y:auto}
+.result-panel{width:340px;min-width:220px;max-width:520px;flex-shrink:0;background:#0d1117;border-left:none;display:flex;flex-direction:column;overflow-y:auto}
 .status-box{padding:20px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
 .s-label{font-size:9px;letter-spacing:1.2px;color:#484f58;font-family:monospace;text-transform:uppercase;margin-bottom:10px}
 .s-icon {font-size:48px;text-align:center;line-height:1;margin-bottom:8px}
@@ -111,7 +125,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
 .h-badge.out{background:rgba(88,166,255,.1);color:#58a6ff}
 .h-time {color:#484f58;font-family:monospace;font-size:11px;flex-shrink:0}
 
-@media(max-width:768px){.kiosk-body{grid-template-columns:1fr}.result-panel{display:none}}
+@media(max-width:768px){
+  .kiosk-body{flex-direction:column}
+  .divider{display:none}
+  .result-panel{width:100%!important;max-width:100%;flex-shrink:0;height:200px;min-height:160px;border-top:1px solid rgba(255,255,255,.07);border-left:none}
+}
 </style>
 </head>
 <body>
@@ -156,6 +174,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#e6edf3;h
     <div class="cam-mode-badge mode-checkin" id="camBadge">● CHECK IN</div>
     <div class="cam-hint" id="camHint"></div>
   </div>
+
+  <!-- DRAG DIVIDER — grab and pull to resize panels -->
+  <div class="divider" id="divider" title="Drag to resize"></div>
 
   <!-- RESULT PANEL -->
   <div class="result-panel">
@@ -464,6 +485,53 @@ function showResult(data) {
     startLoop();           // resume scanning
   }, cfg.hold);
 }
+
+// ── DRAG DIVIDER ───────────────────────────────────────────────────────────
+(function () {
+  const divider     = document.getElementById('divider');
+  const resultPanel = document.querySelector('.result-panel');
+  const body        = document.getElementById('kioskBody') || document.querySelector('.kiosk-body');
+  let dragging = false;
+
+  // Restore saved width
+  const saved = localStorage.getItem('kiosk-panel-w');
+  if (saved && window.innerWidth > 768) {
+    const w = Math.max(220, Math.min(520, parseInt(saved, 10)));
+    resultPanel.style.width = w + 'px';
+  }
+
+  function startDrag(e) {
+    dragging = true;
+    divider.classList.add('dragging');
+    document.body.style.cursor     = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const rect    = body.getBoundingClientRect();
+    const newW    = Math.max(220, Math.min(520, rect.right - clientX));
+    resultPanel.style.width = newW + 'px';
+  }
+
+  function stopDrag() {
+    if (!dragging) return;
+    dragging = false;
+    divider.classList.remove('dragging');
+    document.body.style.cursor     = '';
+    document.body.style.userSelect = '';
+    localStorage.setItem('kiosk-panel-w', parseInt(resultPanel.style.width, 10));
+  }
+
+  divider.addEventListener('mousedown',  startDrag);
+  divider.addEventListener('touchstart', startDrag, { passive: false });
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, { passive: true });
+  document.addEventListener('mouseup',   stopDrag);
+  document.addEventListener('touchend',  stopDrag);
+})();
 
 // ── START ──────────────────────────────────────────────────────────────────
 boot();
